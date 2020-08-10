@@ -32,15 +32,16 @@ MainWindow::MainWindow()
 void MainWindow::makeWidgets() {
     panel = new wxPanel(this);
     auto toolbar = CreateToolBar();
-    newTool = toolbar->AddTool(wxID_NEW, "New", new32_xpm, "New game");
-    optionsTool = toolbar->AddTool(wxID_PREFERENCES, "Options...",
-                                   options32_xpm, "View or change options");
-    aboutTool = toolbar->AddTool(wxID_ABOUT, "About", about32_xpm,
-                                 "About " + wxTheApp->GetAppName());
-    helpTool = toolbar->AddTool(wxID_HELP, "Help", help32_xpm,
-                                "How to play");
-    quitTool = toolbar->AddTool(wxID_EXIT, "Quit", quit32_xpm,
-                                "Quit the game");
+    auto newTool = toolbar->AddTool(wxID_NEW, "New", new32_xpm, "New game");
+    auto optionsTool = toolbar->AddTool(
+        wxID_PREFERENCES, "Options...", options32_xpm,
+        "View or change options");
+    auto aboutTool = toolbar->AddTool(wxID_ABOUT, "About", about32_xpm,
+                                      "About " + wxTheApp->GetAppName());
+    auto helpTool = toolbar->AddTool(wxID_HELP, "Help", help32_xpm,
+                                     "How to play");
+    auto quitTool = toolbar->AddTool(wxID_EXIT, "Quit", quit32_xpm,
+                                     "Quit the game");
     // TODO
     toolbar->Realize();
     // TODO

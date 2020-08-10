@@ -28,9 +28,4 @@ private:
 
     wxPanel* panel;
     // TODO pointer to helpDialog
-    wxToolBarToolBase *newTool;
-    wxToolBarToolBase *optionsTool;
-    wxToolBarToolBase *aboutTool;
-    wxToolBarToolBase *helpTool;
-    wxToolBarToolBase *quitTool;
 };
