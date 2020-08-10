@@ -13,9 +13,12 @@ public:
     MainWindow();
 
 private:
-    void OnAbout(wxCommandEvent& event);
-    void OnExit(wxCommandEvent& event);
-    void OnClose(wxCloseEvent& event);
+    void makeWidgets();
+
+    void onAbout(wxCommandEvent& event);
+    void onExit(wxCommandEvent& event);
+    void onClose(wxCloseEvent& event);
 
     // TODO pointer to helpDialog
+    wxPanel* panel;
 };
