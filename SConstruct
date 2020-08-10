@@ -22,7 +22,7 @@ if WIN:
 else:
     env = Environment(CCFLAGS=ccflags)
 env.ParseConfig(f'{wxconfig}{prefix} --libs --cxxflags')
-app = env.Program('hellowx', sources)
+app = env.Program('Gravitate', sources)
 
 
 def run_at_exit(exe):

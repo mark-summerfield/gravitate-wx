@@ -2,6 +2,7 @@
 // License: GPLv3
 
 #include "mainwindow.hpp"
+#include "images/gravitate32.xpm"
 
 
 MainWindow::MainWindow()
@@ -10,6 +11,8 @@ MainWindow::MainWindow()
                              wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER) {
     SetMinSize(wxSize(240, 300));
     SetTitle(wxTheApp->GetAppName());
+    SetIcon(gravitate32_xpm);
+
     CreateStatusBar();
     SetStatusText("Click a tile to start playing...");
     //Bind(wxEVT_MENU, &MainWindow::OnAbout, this, wxID_ABOUT);
@@ -17,15 +20,18 @@ MainWindow::MainWindow()
     Bind(wxEVT_CLOSE_WINDOW, &MainWindow::OnClose, this);
 }
 
+
 void MainWindow::OnExit(wxCommandEvent& WXUNUSED(event)) {
     Close(true);
 }
+
 
 void MainWindow::OnClose(wxCloseEvent& WXUNUSED(event)) {
     using namespace std;
     cout << "OnClose save settings & high score" << endl;
     Destroy();
 }
+
 
 void MainWindow::OnAbout(wxCommandEvent& WXUNUSED(event)) {
     wxMessageBox("The body of Gravitate's About", "Gravitate — About",

@@ -5,4 +5,8 @@ mainwindow.cpp
 
 SConstruct
 
+# TODO use rcedit in SConstruct to add icon for Windows
+
 st.sh
+
+# vim: syn=yaml
