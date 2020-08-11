@@ -12,14 +12,6 @@ st.sh
 
 
 std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
-int columns;
-config->Read(COLUMNS, &columns, COLUMNS_DEFAULT);
-int rows;
-config->Read(ROWS, &rows, ROWS_DEFAULT);
-int maxColors;
-config->Read(MAX_COLORS, &maxColors, MAX_COLORS_DEFAULT);
-int delayMs;
-config->Read(DELAY_MS, &delayMs, DELAY_MS_DEFAULT);
 int highScore;
 config->Read(HIGH_SCORE, &highScore, HIGH_SCORE_DEFAULT);
 
