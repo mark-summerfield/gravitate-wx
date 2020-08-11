@@ -25,6 +25,7 @@ private:
     void setPositionAndSize();
     void showUpdatedScore();
 
+    void onChar(wxKeyEvent&);
     void onNew(wxCommandEvent&);
     void onOptions(wxCommandEvent&);
     void onAbout(wxCommandEvent&);

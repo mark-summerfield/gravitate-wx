@@ -30,8 +30,8 @@ MainWindow::MainWindow()
     makeLayout();
     makeBindings();
     setPositionAndSize();
-    wxCommandEvent start;
-    onNew(start);
+    wxCommandEvent dummy;
+    onNew(dummy);
     board->SetFocus();
 }
 
@@ -67,7 +67,8 @@ void MainWindow::makeStatusBar() {
     statusBar->SetStatusWidths(STATUS_FIELDS, widths);
     SetStatusText("Click a tile to start playing...");
     showUpdatedScore();
-    statusTimer.Bind(wxEVT_TIMER, [=](wxTimerEvent&) { SetStatusText(""); });
+    statusTimer.Bind(wxEVT_TIMER,
+                     [&](wxTimerEvent&) { SetStatusText(""); });
     statusTimer.StartOnce(TIMEOUT);
 }
 
@@ -81,17 +82,30 @@ void MainWindow::makeLayout() {
 
 
 void MainWindow::makeBindings() {
+    Bind(wxEVT_CHAR_HOOK, &MainWindow::onChar, this);
     Bind(wxEVT_TOOL, &MainWindow::onNew, this, wxID_NEW);
     Bind(wxEVT_TOOL, &MainWindow::onOptions, this, wxID_PREFERENCES);
     Bind(wxEVT_TOOL, &MainWindow::onAbout, this, wxID_ABOUT);
     Bind(wxEVT_TOOL, &MainWindow::onHelp, this, wxID_HELP);
-    Bind(wxEVT_TOOL, [=](wxCommandEvent&) { Close(true); }, wxID_EXIT);
+    Bind(wxEVT_TOOL, [&](wxCommandEvent&) { Close(true); }, wxID_EXIT);
     Bind(wxEVT_CLOSE_WINDOW, &MainWindow::onClose, this);
+    // TODO Board custom events: game over & update score
 }
 
 
 void MainWindow::setPositionAndSize() {
-    std::cout << "setPositionAndSize" << std::endl;
+    std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
+    int x;
+    config->Read(WINDOW_X, &x, -1);
+    int y;
+    config->Read(WINDOW_Y, &y, -1);
+    if (x > -1 && y > -1)
+        SetPosition(wxPoint(x, y));
+    int width;
+    config->Read(WINDOW_WIDTH, &width, 380);
+    int height;
+    config->Read(WINDOW_HEIGHT, &height, 440);
+    SetSize(width, height);
 }
 
 
@@ -100,6 +114,22 @@ void MainWindow::showUpdatedScore() {
     int highScore;
     config->Read(HIGH_SCORE, &highScore, HIGH_SCORE_DEFAULT);
     SetStatusText(wxString::Format("%d/%d", score, highScore), 1);
+}
+
+
+void MainWindow::onChar(wxKeyEvent& event) {
+    wxCommandEvent dummy;
+    if (event.GetKeyCode() == WXK_F1)
+        onHelp(dummy);
+    else
+        switch (event.GetUnicodeKey()) {
+            case 'A': onAbout(dummy); break;
+            case 'H': onHelp(dummy); break;
+            case 'N': onNew(dummy); break;
+            case 'O': onOptions(dummy); break;
+            case 'Q': Close(true); break;
+            default: event.Skip();
+        }
 }
 
 
@@ -135,6 +165,12 @@ void MainWindow::onClose(wxCloseEvent&) {
 
 void MainWindow::saveConfig() {
     std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
+    auto pos = GetPosition();
+    config->Write(WINDOW_X, pos.x);
+    config->Write(WINDOW_Y, pos.y);
+    auto size = GetSize();
+    config->Write(WINDOW_WIDTH, size.GetWidth());
+    config->Write(WINDOW_HEIGHT, size.GetHeight());
     // config->Write(COLUMNS, ?);
     // config->Write(ROWS, ?);
     // config->Write(MAX_COLORS, ?);
