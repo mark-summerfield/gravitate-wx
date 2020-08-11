@@ -21,8 +21,9 @@ else:
 ccflags = ['-std=gnu++11', '-Wall', '-O3', '-Wextra']
 
 if WIN:
+    ccflags.append('-m64')
     env = Environment(CCFLAGS=ccflags, tools=['mingw'])
-    env.Append(LINKFLAGS='-mwindows') # Comment out if debugging on Windows
+    env.Append(LINKFLAGS=['-m64', '-mwindows'])
 else:
     env = Environment(CCFLAGS=ccflags)
 env.ParseConfig(f'{wxconfig}{prefix} --libs --cxxflags')
