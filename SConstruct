@@ -8,7 +8,7 @@ import sys
 WIN = sys.platform.startswith('win')
 
 appname = 'Gravitate'
-sources = ['gravitate.cpp', 'mainwindow.cpp']
+sources = [Glob('*.cpp')]
 
 if WIN:
     prefix = ' --prefix=C:/bin/wx31'

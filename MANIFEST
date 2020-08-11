@@ -2,6 +2,7 @@ gravitate.hpp
 gravitate.cpp
 mainwindow.hpp
 mainwindow.cpp
+config.hpp
 
 SConstruct
 

@@ -2,6 +2,8 @@
 // Copyright © 2020 Mark Summerfield. All rights reserved.
 // License: GPLv3
 
+#include "config.hpp"
+
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
@@ -13,11 +15,13 @@ public:
     MainWindow();
 
 private:
-    void readOptions();
-    void saveOptions();
+    void loadConfig();
+    void saveConfig();
     void makeWidgets();
+    void makeStatusBar();
     void makeLayout();
     void makeBindings();
+    void setPositionAndSize();
 
     void onNew(wxCommandEvent& event);
     void onOptions(wxCommandEvent& event);
@@ -28,4 +32,9 @@ private:
 
     wxPanel* panel;
     // TODO pointer to helpDialog
+    int columns;
+    int rows;
+    int maxColors;
+    int delayMs;
+    int highScore;
 };

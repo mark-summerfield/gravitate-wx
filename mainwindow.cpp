@@ -10,6 +10,8 @@
 #include "images/options32.xpm"
 #include "images/quit32.xpm"
 
+#include <wx/config.h>
+
 
 const long FRAME_STYLE = wxDEFAULT_FRAME_STYLE | wxDEFAULT_DIALOG_STYLE |
                          wxRESIZE_BORDER;
@@ -17,35 +19,50 @@ const long FRAME_STYLE = wxDEFAULT_FRAME_STYLE | wxDEFAULT_DIALOG_STYLE |
 
 MainWindow::MainWindow()
     : wxFrame(nullptr, wxID_ANY, wxTheApp->GetAppName(), wxDefaultPosition,
-              wxDefaultSize, FRAME_STYLE) {
+              wxDefaultSize, FRAME_STYLE),
+      columns(COLUMNS_DEFAULT), rows(ROWS_DEFAULT),
+      maxColors(MAX_COLORS_DEFAULT), delayMs(DELAY_MS_DEFAULT),
+      highScore(HIGH_SCORE_DEFAULT) {
     SetMinSize(wxSize(240, 300));
     SetTitle(wxTheApp->GetAppName());
     SetIcon(gravitate32_xpm);
     makeWidgets();
+    makeStatusBar();
     makeBindings();
-    readOptions();
+    setPositionAndSize();
     wxCommandEvent start;
     onNew(start);
+    // TODO board->SetFocus();
 }
 
 
 void MainWindow::makeWidgets() {
     panel = new wxPanel(this);
     auto toolbar = CreateToolBar();
-    toolbar->AddTool(wxID_NEW, "New", new32_xpm, "New game");
-    toolbar->AddTool(wxID_PREFERENCES, "Options...", options32_xpm,
+    toolbar->AddTool(wxID_NEW, "New", new32_xpm, "New game (n)");
+    toolbar->AddTool(wxID_PREFERENCES, "Options... (o)", options32_xpm,
                      "View or change options");
     toolbar->AddStretchableSpace();
-    toolbar->AddTool(wxID_ABOUT, "About", about32_xpm,
+    toolbar->AddTool(wxID_ABOUT, "About (a)", about32_xpm,
                      "About " + wxTheApp->GetAppName());
-    toolbar->AddTool(wxID_HELP, "Help", help32_xpm, "How to play");
+    toolbar->AddTool(wxID_HELP, "Help (F1)", help32_xpm, "How to play");
     toolbar->AddStretchableSpace();
-    toolbar->AddTool(wxID_EXIT, "Quit", quit32_xpm, "Quit the game");
+    toolbar->AddTool(wxID_EXIT, "Quit (q)", quit32_xpm, "Quit the game");
     toolbar->Realize();
-    // TODO
+    loadConfig(); // Needed for board
+    // TODO create Board
+}
 
-    CreateStatusBar();
+
+void MainWindow::makeStatusBar() {
+    const int STATUS_FIELDS = 2;
+    const long STYLE_FLAG = wxSTB_DEFAULT_STYLE & ~wxSTB_SIZEGRIP;
+    auto statusBar = CreateStatusBar(STATUS_FIELDS, STYLE_FLAG);
+    const int widths[STATUS_FIELDS] = {-3, -1};
+    statusBar->SetStatusWidths(STATUS_FIELDS, widths);
     SetStatusText("Click a tile to start playing...");
+    // TODO updateScore();
+    // TODO wx.CallLater(TIMEOUT, clearStatus);
 }
 
 
@@ -61,6 +78,11 @@ void MainWindow::makeBindings() {
     Bind(wxEVT_TOOL, &MainWindow::onHelp, this, wxID_HELP);
     Bind(wxEVT_TOOL, &MainWindow::onExit, this, wxID_EXIT);
     Bind(wxEVT_CLOSE_WINDOW, &MainWindow::onClose, this);
+}
+
+
+void MainWindow::setPositionAndSize() {
+    std::cout << "setPositionAndSize" << std::endl;
 }
 
 
@@ -94,16 +116,29 @@ void MainWindow::onExit(wxCommandEvent& WXUNUSED(event)) {
 
 
 void MainWindow::onClose(wxCloseEvent& WXUNUSED(event)) {
-    saveOptions();
+    saveConfig();
     Destroy();
 }
 
 
-void MainWindow::readOptions() {
-    std::cout << "readOptions" << std::endl;
+void MainWindow::saveConfig() {
+    auto config = new wxConfig(wxTheApp->GetAppName());
+    // config->Write(COLUMNS, ?);
+    // config->Write(ROWS, ?);
+    // config->Write(MAX_COLORS, ?);
+    // config->Write(DELAY_MS, ?);
+    // config->Write(HIGH_SCORE, ?);
+    delete config;
+    std::cout << "saveConfig" << std::endl;
 }
 
 
-void MainWindow::saveOptions() {
-    std::cout << "saveOptions" << std::endl;
+void MainWindow::loadConfig() {
+    auto config = new wxConfig(wxTheApp->GetAppName());
+    config->Read(COLUMNS, &columns, COLUMNS_DEFAULT);
+    config->Read(ROWS, &rows, ROWS_DEFAULT);
+    config->Read(MAX_COLORS, &maxColors, MAX_COLORS_DEFAULT);
+    config->Read(DELAY_MS, &delayMs, DELAY_MS_DEFAULT);
+    config->Read(HIGH_SCORE, &highScore, HIGH_SCORE_DEFAULT);
+    delete config;
 }

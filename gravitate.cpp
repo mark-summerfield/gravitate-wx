@@ -10,6 +10,7 @@ wxIMPLEMENT_APP(App);
 
 bool App::OnInit() {
     SetAppName("Gravitate");
+    SetVendorName("Qtrac");
     MainWindow *window = new MainWindow();
     window->Show(true);
     return true;
