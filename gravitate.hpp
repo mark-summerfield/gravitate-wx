@@ -8,9 +8,6 @@
 #endif
 
 
-const wxString VERSION("6.0.0");
-
-
 class App : public wxApp {
 public:
     virtual bool OnInit();

@@ -16,7 +16,6 @@ public:
     explicit MainWindow();
 
 private:
-    void saveConfig();
     void makeWidgets();
     void makeToolBar();
     void makeStatusBar();
@@ -24,6 +23,7 @@ private:
     void makeBindings();
     void setPositionAndSize();
     void showUpdatedScore();
+    void saveConfig();
 
     void onChar(wxKeyEvent&);
     void onNew(wxCommandEvent&);
