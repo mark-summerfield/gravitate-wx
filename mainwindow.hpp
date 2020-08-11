@@ -2,7 +2,8 @@
 // Copyright © 2020 Mark Summerfield. All rights reserved.
 // License: GPLv3
 
-#include "config.hpp"
+#include "board.hpp"
+#include "constants.hpp"
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
@@ -15,7 +16,6 @@ public:
     MainWindow();
 
 private:
-    void loadConfig();
     void saveConfig();
     void makeWidgets();
     void makeStatusBar();
@@ -31,10 +31,6 @@ private:
     void onClose(wxCloseEvent& event);
 
     wxPanel* panel;
+    Board *board;
     // TODO pointer to helpDialog
-    int columns;
-    int rows;
-    int maxColors;
-    int delayMs;
-    int highScore;
 };

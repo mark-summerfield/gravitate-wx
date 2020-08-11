@@ -12,6 +12,8 @@
 
 #include <wx/config.h>
 
+#include <memory>
+
 
 const long FRAME_STYLE = wxDEFAULT_FRAME_STYLE | wxDEFAULT_DIALOG_STYLE |
                          wxRESIZE_BORDER;
@@ -19,10 +21,7 @@ const long FRAME_STYLE = wxDEFAULT_FRAME_STYLE | wxDEFAULT_DIALOG_STYLE |
 
 MainWindow::MainWindow()
     : wxFrame(nullptr, wxID_ANY, wxTheApp->GetAppName(), wxDefaultPosition,
-              wxDefaultSize, FRAME_STYLE),
-      columns(COLUMNS_DEFAULT), rows(ROWS_DEFAULT),
-      maxColors(MAX_COLORS_DEFAULT), delayMs(DELAY_MS_DEFAULT),
-      highScore(HIGH_SCORE_DEFAULT) {
+              wxDefaultSize, FRAME_STYLE) {
     SetMinSize(wxSize(240, 300));
     SetTitle(wxTheApp->GetAppName());
     SetIcon(gravitate32_xpm);
@@ -32,7 +31,7 @@ MainWindow::MainWindow()
     setPositionAndSize();
     wxCommandEvent start;
     onNew(start);
-    // TODO board->SetFocus();
+    board->SetFocus();
 }
 
 
@@ -49,8 +48,7 @@ void MainWindow::makeWidgets() {
     toolbar->AddStretchableSpace();
     toolbar->AddTool(wxID_EXIT, "Quit (q)", quit32_xpm, "Quit the game");
     toolbar->Realize();
-    loadConfig(); // Needed for board
-    // TODO create Board
+    board = new Board(this);
 }
 
 
@@ -67,7 +65,10 @@ void MainWindow::makeStatusBar() {
 
 
 void MainWindow::makeLayout() {
-    // TODO
+    auto sizer = new wxBoxSizer(wxVERTICAL);
+    sizer->Add(board, 1, wxEXPAND);
+    panel->SetSizer(sizer);
+    panel->Fit();
 }
 
 
@@ -122,23 +123,11 @@ void MainWindow::onClose(wxCloseEvent& WXUNUSED(event)) {
 
 
 void MainWindow::saveConfig() {
-    auto config = new wxConfig(wxTheApp->GetAppName());
+    std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
     // config->Write(COLUMNS, ?);
     // config->Write(ROWS, ?);
     // config->Write(MAX_COLORS, ?);
     // config->Write(DELAY_MS, ?);
     // config->Write(HIGH_SCORE, ?);
-    delete config;
     std::cout << "saveConfig" << std::endl;
-}
-
-
-void MainWindow::loadConfig() {
-    auto config = new wxConfig(wxTheApp->GetAppName());
-    config->Read(COLUMNS, &columns, COLUMNS_DEFAULT);
-    config->Read(ROWS, &rows, ROWS_DEFAULT);
-    config->Read(MAX_COLORS, &maxColors, MAX_COLORS_DEFAULT);
-    config->Read(DELAY_MS, &delayMs, DELAY_MS_DEFAULT);
-    config->Read(HIGH_SCORE, &highScore, HIGH_SCORE_DEFAULT);
-    delete config;
 }
