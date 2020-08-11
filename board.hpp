@@ -10,7 +10,7 @@
 
 class Board : public wxWindow {
 public:
-    Board(wxWindow* parent);
+    explicit Board(wxWindow* parent);
 
 private:
     bool gameOver;

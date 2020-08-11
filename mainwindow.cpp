@@ -15,18 +15,19 @@
 #include <memory>
 
 
-const long FRAME_STYLE = wxDEFAULT_FRAME_STYLE | wxDEFAULT_DIALOG_STYLE |
+const auto FRAME_STYLE = wxDEFAULT_FRAME_STYLE | wxDEFAULT_DIALOG_STYLE |
                          wxRESIZE_BORDER;
 
 
 MainWindow::MainWindow()
-    : wxFrame(nullptr, wxID_ANY, wxTheApp->GetAppName(), wxDefaultPosition,
-              wxDefaultSize, FRAME_STYLE) {
+        : wxFrame(nullptr, wxID_ANY, wxTheApp->GetAppName(),
+                  wxDefaultPosition, wxDefaultSize, FRAME_STYLE),
+          score(0) {
     SetMinSize(wxSize(240, 300));
     SetTitle(wxTheApp->GetAppName());
     SetIcon(gravitate32_xpm);
     makeWidgets();
-    makeStatusBar();
+    makeLayout();
     makeBindings();
     setPositionAndSize();
     wxCommandEvent start;
@@ -37,6 +38,13 @@ MainWindow::MainWindow()
 
 void MainWindow::makeWidgets() {
     panel = new wxPanel(this);
+    makeToolBar();
+    board = new Board(this);
+    makeStatusBar();
+}
+
+
+void MainWindow::makeToolBar() {
     auto toolbar = CreateToolBar();
     toolbar->AddTool(wxID_NEW, "New", new32_xpm, "New game (n)");
     toolbar->AddTool(wxID_PREFERENCES, "Options... (o)", options32_xpm,
@@ -48,7 +56,6 @@ void MainWindow::makeWidgets() {
     toolbar->AddStretchableSpace();
     toolbar->AddTool(wxID_EXIT, "Quit (q)", quit32_xpm, "Quit the game");
     toolbar->Realize();
-    board = new Board(this);
 }
 
 
@@ -59,8 +66,9 @@ void MainWindow::makeStatusBar() {
     const int widths[STATUS_FIELDS] = {-3, -1};
     statusBar->SetStatusWidths(STATUS_FIELDS, widths);
     SetStatusText("Click a tile to start playing...");
-    // TODO updateScore();
-    // TODO wx.CallLater(TIMEOUT, clearStatus);
+    showUpdatedScore();
+    statusTimer.Bind(wxEVT_TIMER, [=](wxTimerEvent&) { SetStatusText(""); });
+    statusTimer.StartOnce(TIMEOUT);
 }
 
 
@@ -77,7 +85,7 @@ void MainWindow::makeBindings() {
     Bind(wxEVT_TOOL, &MainWindow::onOptions, this, wxID_PREFERENCES);
     Bind(wxEVT_TOOL, &MainWindow::onAbout, this, wxID_ABOUT);
     Bind(wxEVT_TOOL, &MainWindow::onHelp, this, wxID_HELP);
-    Bind(wxEVT_TOOL, &MainWindow::onExit, this, wxID_EXIT);
+    Bind(wxEVT_TOOL, [=](wxCommandEvent&) { Close(true); }, wxID_EXIT);
     Bind(wxEVT_CLOSE_WINDOW, &MainWindow::onClose, this);
 }
 
@@ -87,7 +95,15 @@ void MainWindow::setPositionAndSize() {
 }
 
 
-void MainWindow::onAbout(wxCommandEvent& WXUNUSED(event)) {
+void MainWindow::showUpdatedScore() {
+    std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
+    int highScore;
+    config->Read(HIGH_SCORE, &highScore, HIGH_SCORE_DEFAULT);
+    SetStatusText(wxString::Format("%d/%d", score, highScore), 1);
+}
+
+
+void MainWindow::onAbout(wxCommandEvent&) {
     // TODO replace with proper about box name, version, wx version,
     // license etc.
     wxMessageBox("The body of Gravitate's About",
@@ -96,27 +112,22 @@ void MainWindow::onAbout(wxCommandEvent& WXUNUSED(event)) {
 }
 
 
-void MainWindow::onNew(wxCommandEvent& WXUNUSED(event)) {
+void MainWindow::onNew(wxCommandEvent&) {
     std::cout << "onNew" << std::endl;
 }
 
 
-void MainWindow::onOptions(wxCommandEvent& WXUNUSED(event)) {
+void MainWindow::onOptions(wxCommandEvent&) {
     std::cout << "onOptions" << std::endl;
 }
 
 
-void MainWindow::onHelp(wxCommandEvent& WXUNUSED(event)) {
+void MainWindow::onHelp(wxCommandEvent&) {
     std::cout << "onHelp" << std::endl;
 }
 
 
-void MainWindow::onExit(wxCommandEvent& WXUNUSED(event)) {
-    Close(true);
-}
-
-
-void MainWindow::onClose(wxCloseEvent& WXUNUSED(event)) {
+void MainWindow::onClose(wxCloseEvent&) {
     saveConfig();
     Destroy();
 }

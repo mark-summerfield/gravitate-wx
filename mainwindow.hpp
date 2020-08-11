@@ -13,24 +13,27 @@
 
 class MainWindow : public wxFrame {
 public:
-    MainWindow();
+    explicit MainWindow();
 
 private:
     void saveConfig();
     void makeWidgets();
+    void makeToolBar();
     void makeStatusBar();
     void makeLayout();
     void makeBindings();
     void setPositionAndSize();
+    void showUpdatedScore();
 
-    void onNew(wxCommandEvent& event);
-    void onOptions(wxCommandEvent& event);
-    void onAbout(wxCommandEvent& event);
-    void onHelp(wxCommandEvent& event);
-    void onExit(wxCommandEvent& event);
-    void onClose(wxCloseEvent& event);
+    void onNew(wxCommandEvent&);
+    void onOptions(wxCommandEvent&);
+    void onAbout(wxCommandEvent&);
+    void onHelp(wxCommandEvent&);
+    void onClose(wxCloseEvent&);
 
     wxPanel* panel;
     Board *board;
     // TODO pointer to helpDialog
+    wxTimer statusTimer;
+    int score;
 };
