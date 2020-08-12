@@ -1,8 +1,8 @@
 // Copyright © 2020 Mark Summerfield. All rights reserved.
 // License: GPLv3
 
+#include "app.hpp"
 #include "mainwindow.hpp"
-#include "gravitate.hpp"
 
 
 wxIMPLEMENT_APP(App);

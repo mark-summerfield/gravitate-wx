@@ -26,15 +26,12 @@ private:
     void saveConfig();
 
     void onChar(wxKeyEvent&);
-    void onNew(wxCommandEvent&);
-    void onOptions(wxCommandEvent&);
-    void onAbout(wxCommandEvent&);
-    void onHelp(wxCommandEvent&);
     void onClose(wxCloseEvent&);
 
     wxPanel* panel;
     Board *board;
     // TODO pointer to helpDialog
+    wxTimer startupTimer;
     wxTimer statusTimer;
     int score;
 };

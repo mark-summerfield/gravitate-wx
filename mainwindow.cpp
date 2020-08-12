@@ -1,6 +1,7 @@
 // Copyright © 2020 Mark Summerfield. All rights reserved.
 // License: GPLv3
 
+#include "actions.hpp"
 #include "mainwindow.hpp"
 
 #include "images/about32.xpm"
@@ -30,9 +31,10 @@ MainWindow::MainWindow()
     makeLayout();
     makeBindings();
     setPositionAndSize();
-    wxCommandEvent dummy;
-    onNew(dummy);
-    board->SetFocus();
+    startupTimer.Bind( // Call after MainWindow is fully constructed
+        wxEVT_TIMER,
+        [&](wxTimerEvent&) { Actions::onNew(this); board->SetFocus(); });
+    startupTimer.StartOnce(100);
 }
 
 
@@ -83,10 +85,14 @@ void MainWindow::makeLayout() {
 
 void MainWindow::makeBindings() {
     Bind(wxEVT_CHAR_HOOK, &MainWindow::onChar, this);
-    Bind(wxEVT_TOOL, &MainWindow::onNew, this, wxID_NEW);
-    Bind(wxEVT_TOOL, &MainWindow::onOptions, this, wxID_PREFERENCES);
-    Bind(wxEVT_TOOL, &MainWindow::onAbout, this, wxID_ABOUT);
-    Bind(wxEVT_TOOL, &MainWindow::onHelp, this, wxID_HELP);
+    Bind(wxEVT_TOOL, [&](wxCommandEvent&) { Actions::onNew(this); },
+         wxID_NEW);
+    Bind(wxEVT_TOOL, [&](wxCommandEvent&) { Actions::onOptions(this); },
+         wxID_PREFERENCES);
+    Bind(wxEVT_TOOL, [&](wxCommandEvent&) { Actions::onAbout(this); },
+         wxID_ABOUT);
+    Bind(wxEVT_TOOL, [&](wxCommandEvent&) { Actions::onHelp(this); },
+         wxID_HELP);
     Bind(wxEVT_TOOL, [&](wxCommandEvent&) { Close(true); }, wxID_EXIT);
     Bind(wxEVT_CLOSE_WINDOW, &MainWindow::onClose, this);
     // TODO Board custom events: game over & update score
@@ -118,42 +124,17 @@ void MainWindow::showUpdatedScore() {
 
 
 void MainWindow::onChar(wxKeyEvent& event) {
-    wxCommandEvent dummy;
     if (event.GetKeyCode() == WXK_F1)
-        onHelp(dummy);
+        Actions::onHelp(this);
     else
         switch (event.GetUnicodeKey()) {
-            case 'A': onAbout(dummy); break;
-            case 'H': onHelp(dummy); break;
-            case 'N': onNew(dummy); break;
-            case 'O': onOptions(dummy); break;
+            case 'A': Actions::onAbout(this); break;
+            case 'H': Actions::onHelp(this); break;
+            case 'N': Actions::onNew(this); break;
+            case 'O': Actions::onOptions(this); break;
             case 'Q': Close(true); break;
             default: event.Skip();
         }
-}
-
-
-void MainWindow::onAbout(wxCommandEvent&) {
-    // TODO replace with proper about box name, version, wx version,
-    // license etc.
-    wxMessageBox("The body of Gravitate's About",
-                 wxString::FromUTF8("Gravitate — About"),
-                 wxOK | wxICON_INFORMATION);
-}
-
-
-void MainWindow::onNew(wxCommandEvent&) {
-    std::cout << "onNew" << std::endl;
-}
-
-
-void MainWindow::onOptions(wxCommandEvent&) {
-    std::cout << "onOptions" << std::endl;
-}
-
-
-void MainWindow::onHelp(wxCommandEvent&) {
-    std::cout << "onHelp" << std::endl;
 }
 
 

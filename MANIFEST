@@ -1,7 +1,9 @@
-gravitate.hpp
-gravitate.cpp
+app.hpp
+app.cpp
 mainwindow.hpp
 mainwindow.cpp
+actions.hpp # TODO onHelp onOptions (onNew -- once board is done)
+actions.cpp
 constants.hpp
 board.hpp # TODO
 board.cpp # TODO
@@ -9,10 +11,5 @@ board.cpp # TODO
 SConstruct
 
 st.sh
-
-
-std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
-int highScore;
-config->Read(HIGH_SCORE, &highScore, HIGH_SCORE_DEFAULT);
 
 # vim: syn=yaml
