@@ -6,12 +6,11 @@
 #include "images/gravitate32.xpm"
 
 #include <wx/datetime.h>
-#include <wx/html/htmlwin.h>
 #include <wx/platinfo.h>
 
 
 const wxString HTML_TEXT(R"RAW(<html>
-<body>
+<body style="background-color: %s;">
 <h2><center><u>Gravitate %s</u></center></h2>
 <p>
 <center>A game similar to TileFall/SameGame.</center>
@@ -55,8 +54,10 @@ About::About(wxWindow* parent)
     auto htmlLabel = new wxHtmlWindow(this);
     int year = wxDateTime::GetCurrentYear();
     auto platform = wxPlatformInfo::Get();
+    auto background = wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE);
     htmlLabel->SetPage(wxString::Format(
-        HTML_TEXT, VERSION, __VERSION__, wxVERSION_STRING,
+        HTML_TEXT, background.GetAsString(wxC2S_HTML_SYNTAX), VERSION,
+        __VERSION__, wxVERSION_STRING,
         platform.GetOperatingSystemDescription(),
         year == 2020 ? "2020" : wxString::Format("2020-%d", year)));
     auto okButton = new wxButton(this, wxID_OK);
@@ -65,4 +66,6 @@ About::About(wxWindow* parent)
     sizer->Add(htmlLabel, 1, wxALL | wxEXPAND, 3);
     sizer->Add(okButton, 0, wxALL | wxALIGN_CENTER, 3);
     SetSizer(sizer);
+    Bind(wxEVT_HTML_LINK_CLICKED, [&](wxHtmlLinkEvent event) {
+         wxLaunchDefaultBrowser(event.GetLinkInfo().GetHref()); });
 }

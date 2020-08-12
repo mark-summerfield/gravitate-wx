@@ -6,10 +6,9 @@
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif
-#include <wx/html/htmlwin.h>
 
 
-class About : public wxDialog {
+class Options : public wxDialog {
 public:
-    explicit About(wxWindow* parent);
+    explicit Options(wxWindow* parent);
 };

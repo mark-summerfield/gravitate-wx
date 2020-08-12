@@ -30,7 +30,7 @@ MainWindow::MainWindow()
     startupTimer.Bind( // Call after MainWindow is fully constructed
         wxEVT_TIMER,
         [&](wxTimerEvent&) { Actions::onNew(this); board->SetFocus(); });
-    startupTimer.StartOnce(100);
+    startupTimer.StartOnce(50);
 }
 
 

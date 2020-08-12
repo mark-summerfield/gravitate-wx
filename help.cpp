@@ -7,7 +7,8 @@
 #include <wx/html/htmlwin.h>
 
 
-const wxString HTML_TEXT(R"RAW(<html><body>
+const wxString HTML_TEXT(R"RAW(<html>
+<body style="background-color: %s;">
 <h2><center><u>Gravitate</u></center></h2>
 <p>
 <b>The purpose of the game is to remove all the tiles.</b>
@@ -35,7 +36,9 @@ Help::Help(wxWindow* parent)
                    wxDefaultPosition, wxSize(400, 500), FRAME_STYLE) {
     SetMinSize(wxSize(200, 200));
     auto htmlLabel = new wxHtmlWindow(this);
-    htmlLabel->SetPage(HTML_TEXT);
+    auto background = wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE);
+    htmlLabel->SetPage(wxString::Format(HTML_TEXT,
+                       background.GetAsString(wxC2S_HTML_SYNTAX)));
     auto okButton = new wxButton(this, wxID_OK);
     auto sizer = new wxBoxSizer(wxVERTICAL);
     sizer->Add(htmlLabel, 1, wxALL | wxEXPAND, 3);

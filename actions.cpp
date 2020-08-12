@@ -3,6 +3,7 @@
 
 #include "about.hpp"
 #include "help.hpp"
+#include "options.hpp"
 #include "actions.hpp"
 
 
@@ -20,7 +21,8 @@ void onNew(MainWindow *parent) {
 
 
 void onOptions(MainWindow *parent) {
-    std::cout << "onOptions" << std::endl;
+    Options options(parent);
+    options.ShowModal();
 }
 
 

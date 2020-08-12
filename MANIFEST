@@ -2,12 +2,14 @@ app.hpp
 app.cpp
 mainwindow.hpp
 mainwindow.cpp
-actions.hpp # TODO onHelp onOptions (onNew -- once board is done)
-actions.cpp
+actions.hpp
+actions.cpp # TODO (onNew -- once board is done)
 about.hpp
-about.cpp # TODO
+about.cpp
 help.hpp
 help.cpp
+options.hpp
+options.cpp # TODO
 constants.hpp
 board.hpp # TODO
 board.cpp # TODO

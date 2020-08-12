@@ -28,10 +28,9 @@ private:
     void onChar(wxKeyEvent&);
     void onClose(wxCloseEvent&);
 
-    wxPanel* panel;
-    Board *board;
-    // TODO pointer to helpDialog
     wxTimer startupTimer;
     wxTimer statusTimer;
+    wxPanel* panel;
+    Board *board;
     int score;
 };
