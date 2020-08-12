@@ -16,10 +16,6 @@
 #include <memory>
 
 
-const auto FRAME_STYLE = wxDEFAULT_FRAME_STYLE | wxDEFAULT_DIALOG_STYLE |
-                         wxRESIZE_BORDER;
-
-
 MainWindow::MainWindow()
         : wxFrame(nullptr, wxID_ANY, wxTheApp->GetAppName(),
                   wxDefaultPosition, wxDefaultSize, FRAME_STYLE),

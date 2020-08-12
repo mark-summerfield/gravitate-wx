@@ -4,6 +4,10 @@ mainwindow.hpp
 mainwindow.cpp
 actions.hpp # TODO onHelp onOptions (onNew -- once board is done)
 actions.cpp
+about.hpp
+about.cpp # TODO
+help.hpp
+help.cpp
 constants.hpp
 board.hpp # TODO
 board.cpp # TODO
