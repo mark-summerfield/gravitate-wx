@@ -8,11 +8,7 @@
 #endif
 
 
-class Board : public wxWindow {
+class HelpWindow : public wxDialog {
 public:
-    explicit Board(wxWindow* parent);
-
-private:
-    bool gameOver;
-    bool drawing;
+    explicit HelpWindow(wxWindow* parent);
 };

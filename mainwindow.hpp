@@ -2,7 +2,7 @@
 // Copyright © 2020 Mark Summerfield. All rights reserved.
 // License: GPLv3
 
-#include "board.hpp"
+#include "boardwidget.hpp"
 #include "constants.hpp"
 
 #include <wx/wxprec.h>
@@ -31,6 +31,6 @@ private:
     wxTimer startupTimer;
     wxTimer statusTimer;
     wxPanel* panel;
-    Board *board;
+    BoardWidget *board;
     int score;
 };

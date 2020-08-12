@@ -1,17 +1,17 @@
 // Copyright © 2020 Mark Summerfield. All rights reserved.
 // License: GPLv3
 
-#include "about.hpp"
-#include "help.hpp"
-#include "options.hpp"
+#include "aboutwindow.hpp"
+#include "helpwindow.hpp"
+#include "optionswindow.hpp"
 #include "actions.hpp"
 
 
 namespace Actions {
 
 void onAbout(MainWindow* parent) {
-    About about(parent);
-    about.ShowModal();
+    AboutWindow aboutWindow(parent);
+    aboutWindow.ShowModal();
 }
 
 
@@ -21,14 +21,14 @@ void onNew(MainWindow *parent) {
 
 
 void onOptions(MainWindow *parent) {
-    Options options(parent);
-    options.ShowModal();
+    OptionsWindow optionsWindow(parent);
+    optionsWindow.ShowModal();
 }
 
 
 void onHelp(MainWindow *parent) {
-    Help help(parent);
-    help.ShowModal();
+    HelpWindow helpWindow(parent);
+    helpWindow.ShowModal();
 }
 
 

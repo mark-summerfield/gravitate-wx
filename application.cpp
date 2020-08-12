@@ -1,14 +1,14 @@
 // Copyright © 2020 Mark Summerfield. All rights reserved.
 // License: GPLv3
 
-#include "app.hpp"
+#include "application.hpp"
 #include "mainwindow.hpp"
 
 
-wxIMPLEMENT_APP(App);
+wxIMPLEMENT_APP(Application);
 
 
-bool App::OnInit() {
+bool Application::OnInit() {
     SetAppName("Gravitate");
     SetVendorName("qtrac.eu");
     MainWindow *window = new MainWindow();

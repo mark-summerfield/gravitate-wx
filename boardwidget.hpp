@@ -8,7 +8,11 @@
 #endif
 
 
-class Options : public wxDialog {
+class BoardWidget : public wxWindow {
 public:
-    explicit Options(wxWindow* parent);
+    explicit BoardWidget(wxWindow* parent);
+
+private:
+    bool gameOver;
+    bool drawing;
 };

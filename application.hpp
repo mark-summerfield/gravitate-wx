@@ -6,10 +6,9 @@
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif
-#include <wx/html/htmlwin.h>
 
 
-class About : public wxDialog {
+class Application : public wxApp {
 public:
-    explicit About(wxWindow* parent);
+    virtual bool OnInit();
 };

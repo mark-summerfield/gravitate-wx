@@ -6,9 +6,10 @@
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif
+#include <wx/html/htmlwin.h>
 
 
-class Help : public wxDialog {
+class AboutWindow : public wxDialog {
 public:
-    explicit Help(wxWindow* parent);
+    explicit AboutWindow(wxWindow* parent);
 };

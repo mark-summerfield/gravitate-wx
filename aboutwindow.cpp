@@ -1,7 +1,7 @@
 // Copyright © 2020 Mark Summerfield. All rights reserved.
 // License: GPLv3
 
-#include "about.hpp"
+#include "aboutwindow.hpp"
 #include "constants.hpp"
 #include "images/gravitate32.xpm"
 
@@ -44,7 +44,7 @@ particular purpose. see the GNU General Public License for more details.
 </body></html>)RAW");
 
 
-About::About(wxWindow* parent)
+AboutWindow::AboutWindow(wxWindow* parent)
         : wxDialog(parent, wxID_ANY,
                    wxString::Format(L"About — %s", wxTheApp->GetAppName()),
                    wxDefaultPosition, wxSize(450, 550), FRAME_STYLE) {

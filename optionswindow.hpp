@@ -8,7 +8,7 @@
 #endif
 
 
-class App : public wxApp {
+class OptionsWindow : public wxDialog {
 public:
-    virtual bool OnInit();
+    explicit OptionsWindow(wxWindow* parent);
 };

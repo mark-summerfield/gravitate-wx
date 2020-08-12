@@ -37,7 +37,7 @@ MainWindow::MainWindow()
 void MainWindow::makeWidgets() {
     panel = new wxPanel(this);
     makeToolBar();
-    board = new Board(this);
+    board = new BoardWidget(this);
     makeStatusBar();
 }
 

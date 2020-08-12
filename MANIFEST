@@ -1,18 +1,18 @@
-app.hpp
-app.cpp
+application.hpp
+application.cpp
 mainwindow.hpp
 mainwindow.cpp
 actions.hpp
 actions.cpp # TODO (onNew -- once board is done)
-about.hpp
-about.cpp
-help.hpp
-help.cpp
-options.hpp
-options.cpp # TODO
+aboutwindow.hpp
+aboutwindow.cpp
+helpwindow.hpp
+helpwindow.cpp
+optionswindow.hpp
+optionswindow.cpp # TODO
 constants.hpp
-board.hpp # TODO
-board.cpp # TODO
+boardwidget.hpp # TODO
+boardwidget.cpp # TODO
 
 SConstruct
 

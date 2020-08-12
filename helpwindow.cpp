@@ -2,7 +2,7 @@
 // License: GPLv3
 
 #include "constants.hpp"
-#include "help.hpp"
+#include "helpwindow.hpp"
 
 #include <wx/html/htmlwin.h>
 
@@ -30,7 +30,7 @@ tiles falling to the bottom and moving off to the left, they
 </body></html>)RAW");
 
 
-Help::Help(wxWindow* parent)
+HelpWindow::HelpWindow(wxWindow* parent)
         : wxDialog(parent, wxID_ANY,
                    wxString::Format(L"Help — %s", wxTheApp->GetAppName()),
                    wxDefaultPosition, wxSize(400, 500), FRAME_STYLE) {
