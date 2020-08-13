@@ -19,6 +19,7 @@ OptionsWindow::OptionsWindow(wxWindow* parent)
     Bind(wxEVT_BUTTON, &OptionsWindow::onOk, this, wxID_OK);
 }
 
+
 void OptionsWindow::makeWidgets() {
     auto style = wxSP_ARROW_KEYS | wxALIGN_RIGHT;
     std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
@@ -78,13 +79,11 @@ void OptionsWindow::makeLayout() {
 }
 
 
-void OptionsWindow::onOk(wxCommandEvent& event) {
+void OptionsWindow::onOk(wxCommandEvent&) {
     std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
-    /*
-    config->Write(COLUMNS, ?);
-    config->Write(ROWS, ?);
-    config->Write(MAX_COLORS, ?);
-    config->Write(DELAY_MS, ?);
-    */
+    config->Write(COLUMNS, columnsSpinCtrl->GetValue());
+    config->Write(ROWS, rowsSpinCtrl->GetValue());
+    config->Write(MAX_COLORS, maxColorsSpinCtrl->GetValue());
+    config->Write(DELAY_MS, delayMsSpinCtrl->GetValue());
     EndModal(wxID_OK);
 }
