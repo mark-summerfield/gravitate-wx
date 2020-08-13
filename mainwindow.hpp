@@ -22,15 +22,16 @@ private:
     void makeLayout();
     void makeBindings();
     void setPositionAndSize();
-    void showUpdatedScore();
+    void showScores(int);
     void saveConfig();
 
     void onChar(wxKeyEvent&);
     void onClose(wxCloseEvent&);
+    void onNew(wxCommandEvent&);
+    void onGameOver(wxCommandEvent&);
 
     wxTimer startupTimer;
     wxTimer statusTimer;
     wxPanel* panel;
     BoardWidget *board;
-    int score;
 };

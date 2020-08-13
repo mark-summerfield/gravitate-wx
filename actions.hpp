@@ -8,7 +8,6 @@
 namespace Actions {
 
 void onAbout(MainWindow* parent);
-void onNew(MainWindow* parent);
 void onOptions(MainWindow* parent);
 void onHelp(MainWindow* parent);
 

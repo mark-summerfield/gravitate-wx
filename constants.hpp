@@ -30,3 +30,7 @@ const int TIMEOUT = 5000; // 5 sec
 
 const auto FRAME_STYLE = wxDEFAULT_FRAME_STYLE | wxDEFAULT_DIALOG_STYLE |
                          wxRESIZE_BORDER;
+
+const wxString LOST("LOST");
+const wxString WON("WON");
+

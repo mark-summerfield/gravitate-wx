@@ -8,11 +8,21 @@
 #endif
 
 
+wxDECLARE_EVENT(SCORE_EVENT, wxCommandEvent);
+wxDECLARE_EVENT(GAME_OVER_EVENT, wxCommandEvent);
+
+
 class BoardWidget : public wxWindow {
 public:
     explicit BoardWidget(wxWindow* parent);
 
+    void newGame();
+
 private:
+    void announceScore();
+    void announceGameOver(const wxString&);
+
+    int score;
     bool gameOver;
     bool drawing;
 };

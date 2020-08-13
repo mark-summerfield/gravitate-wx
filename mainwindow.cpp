@@ -18,8 +18,7 @@
 
 MainWindow::MainWindow()
         : wxFrame(nullptr, wxID_ANY, wxTheApp->GetAppName(),
-                  wxDefaultPosition, wxDefaultSize, FRAME_STYLE),
-          score(0) {
+                  wxDefaultPosition, wxDefaultSize, FRAME_STYLE) {
     SetMinSize(wxSize(240, 300));
     SetTitle(wxTheApp->GetAppName());
     SetIcon(gravitate32_xpm);
@@ -28,8 +27,8 @@ MainWindow::MainWindow()
     makeBindings();
     setPositionAndSize();
     startupTimer.Bind( // Call after MainWindow is fully constructed
-        wxEVT_TIMER,
-        [&](wxTimerEvent&) { Actions::onNew(this); board->SetFocus(); });
+        wxEVT_TIMER, [&](wxTimerEvent&) {
+            wxCommandEvent event; MainWindow::onNew(event); });
     startupTimer.StartOnce(50);
 }
 
@@ -64,7 +63,7 @@ void MainWindow::makeStatusBar() {
     const int widths[STATUS_FIELDS] = {-3, -1};
     statusBar->SetStatusWidths(STATUS_FIELDS, widths);
     SetStatusText("Click a tile to start playing...");
-    showUpdatedScore();
+    showScores(0);
     statusTimer.Bind(wxEVT_TIMER,
                      [&](wxTimerEvent&) { SetStatusText(""); });
     statusTimer.StartOnce(TIMEOUT);
@@ -81,8 +80,7 @@ void MainWindow::makeLayout() {
 
 void MainWindow::makeBindings() {
     Bind(wxEVT_CHAR_HOOK, &MainWindow::onChar, this);
-    Bind(wxEVT_TOOL, [&](wxCommandEvent&) { Actions::onNew(this); },
-         wxID_NEW);
+    Bind(wxEVT_TOOL, &MainWindow::onNew, this, wxID_NEW);
     Bind(wxEVT_TOOL, [&](wxCommandEvent&) { Actions::onOptions(this); },
          wxID_PREFERENCES);
     Bind(wxEVT_TOOL, [&](wxCommandEvent&) { Actions::onAbout(this); },
@@ -91,7 +89,9 @@ void MainWindow::makeBindings() {
          wxID_HELP);
     Bind(wxEVT_TOOL, [&](wxCommandEvent&) { Close(true); }, wxID_EXIT);
     Bind(wxEVT_CLOSE_WINDOW, &MainWindow::onClose, this);
-    // TODO Board custom events: game over & update score
+    Bind(SCORE_EVENT, [&](wxCommandEvent& event) {
+         showScores(event.GetInt()); });
+    Bind(GAME_OVER_EVENT, &MainWindow::onGameOver, this);
 }
 
 
@@ -111,10 +111,11 @@ void MainWindow::setPositionAndSize() {
 }
 
 
-void MainWindow::showUpdatedScore() {
+void MainWindow::showScores(int score) {
     std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
     int highScore;
     config->Read(HIGH_SCORE, &highScore, HIGH_SCORE_DEFAULT);
+    // TODO use 1,000s separator if poss.
     SetStatusText(wxString::Format("%d/%d", score, highScore), 1);
 }
 
@@ -126,7 +127,7 @@ void MainWindow::onChar(wxKeyEvent& event) {
         switch (event.GetUnicodeKey()) {
             case 'A': Actions::onAbout(this); break;
             case 'H': Actions::onHelp(this); break;
-            case 'N': Actions::onNew(this); break;
+            case 'N': { wxCommandEvent event; onNew(event); break; }
             case 'O': Actions::onOptions(this); break;
             case 'Q': Close(true); break;
             default: event.Skip();
@@ -152,6 +153,33 @@ void MainWindow::saveConfig() {
     // config->Write(ROWS, ?);
     // config->Write(MAX_COLORS, ?);
     // config->Write(DELAY_MS, ?);
-    // config->Write(HIGH_SCORE, ?);
     std::cout << "saveConfig" << std::endl;
+}
+
+
+void MainWindow::onNew(wxCommandEvent&) {
+    SetStatusText("");
+    board->newGame();
+    board->SetFocus();
+}
+
+
+void MainWindow::onGameOver(wxCommandEvent& event) {
+    int score = event.GetInt();
+    std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
+    int highScore;
+    config->Read(HIGH_SCORE, &highScore, HIGH_SCORE_DEFAULT);
+    wxString outcome;
+    if (event.GetString() == WON) {
+        outcome = "You won";
+        if (score > highScore) {
+            outcome += " with a new highscore";
+            config->Write(HIGH_SCORE, highScore);
+        }
+        outcome += '!';
+    }
+    else
+        outcome = "Game Over.";
+    showScores(score);
+    SetStatusText(outcome + " Click New to play again...");
 }

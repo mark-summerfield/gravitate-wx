@@ -15,11 +15,6 @@ void onAbout(MainWindow* parent) {
 }
 
 
-void onNew(MainWindow *parent) {
-    std::cout << "onNew" << std::endl;
-}
-
-
 void onOptions(MainWindow *parent) {
     OptionsWindow optionsWindow(parent);
     optionsWindow.ShowModal();
