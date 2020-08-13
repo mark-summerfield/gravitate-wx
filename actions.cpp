@@ -2,6 +2,7 @@
 // License: GPLv3
 
 #include "aboutwindow.hpp"
+#include "constants.hpp"
 #include "helpwindow.hpp"
 #include "optionswindow.hpp"
 #include "actions.hpp"
@@ -17,7 +18,9 @@ void onAbout(MainWindow* parent) {
 
 void onOptions(MainWindow *parent) {
     OptionsWindow optionsWindow(parent);
-    optionsWindow.ShowModal();
+    if (optionsWindow.ShowModal() == wxID_OK)
+        parent->setTemporaryStatusMessage(
+            "Updated Options: Click New to use them", TIMEOUT * 2);
 }
 
 

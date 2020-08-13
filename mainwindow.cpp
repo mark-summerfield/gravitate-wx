@@ -18,7 +18,8 @@
 
 MainWindow::MainWindow()
         : wxFrame(nullptr, wxID_ANY, wxTheApp->GetAppName(),
-                  wxDefaultPosition, wxDefaultSize, FRAME_STYLE) {
+                  wxDefaultPosition, wxDefaultSize, FRAME_STYLE),
+          starting(true) {
     SetMinSize(wxSize(240, 300));
     SetTitle(wxTheApp->GetAppName());
     SetIcon(gravitate32_xpm);
@@ -30,6 +31,16 @@ MainWindow::MainWindow()
         wxEVT_TIMER, [&](wxTimerEvent&) {
             wxCommandEvent event; MainWindow::onNew(event); });
     startupTimer.StartOnce(50);
+}
+
+
+void MainWindow::setTemporaryStatusMessage(const wxString& message,
+                                           int timeoutMs) {
+    statusTimer.Stop();
+    SetStatusText(message);
+    statusTimer.Bind(wxEVT_TIMER,
+                     [&](wxTimerEvent&) { SetStatusText(""); });
+    statusTimer.StartOnce(timeoutMs);
 }
 
 
@@ -62,11 +73,8 @@ void MainWindow::makeStatusBar() {
     auto statusBar = CreateStatusBar(STATUS_FIELDS, STYLE_FLAG);
     const int widths[STATUS_FIELDS] = {-3, -1};
     statusBar->SetStatusWidths(STATUS_FIELDS, widths);
-    SetStatusText("Click a tile to start playing...");
     showScores(0);
-    statusTimer.Bind(wxEVT_TIMER,
-                     [&](wxTimerEvent&) { SetStatusText(""); });
-    statusTimer.StartOnce(TIMEOUT);
+    setTemporaryStatusMessage("Click a tile to start playing...");
 }
 
 
@@ -149,16 +157,16 @@ void MainWindow::saveConfig() {
     auto size = GetSize();
     config->Write(WINDOW_WIDTH, size.GetWidth());
     config->Write(WINDOW_HEIGHT, size.GetHeight());
-    // config->Write(COLUMNS, ?);
-    // config->Write(ROWS, ?);
-    // config->Write(MAX_COLORS, ?);
-    // config->Write(DELAY_MS, ?);
-    std::cout << "saveConfig" << std::endl;
 }
 
 
 void MainWindow::onNew(wxCommandEvent&) {
-    SetStatusText("");
+    if (starting) {
+        starting = false;
+    }
+    else {
+        SetStatusText("");
+    }
     board->newGame();
     board->SetFocus();
 }

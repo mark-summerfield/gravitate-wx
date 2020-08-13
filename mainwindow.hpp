@@ -15,6 +15,9 @@ class MainWindow : public wxFrame {
 public:
     explicit MainWindow();
 
+    void setTemporaryStatusMessage(const wxString& message,
+                                   int timeoutMs=TIMEOUT);
+
 private:
     void makeWidgets();
     void makeToolBar();
@@ -34,4 +37,5 @@ private:
     wxTimer statusTimer;
     wxPanel* panel;
     BoardWidget *board;
+    bool starting;
 };

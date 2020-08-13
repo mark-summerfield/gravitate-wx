@@ -10,9 +10,9 @@ helpwindow.hpp
 helpwindow.cpp
 optionswindow.hpp
 optionswindow.cpp # TODO (1)
-constants.hpp
 boardwidget.hpp # TODO (3)
 boardwidget.cpp # TODO ...
+constants.hpp
 
 SConstruct
 
