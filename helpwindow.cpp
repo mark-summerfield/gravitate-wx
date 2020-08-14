@@ -9,11 +9,11 @@
 #include <wx/html/htmlwin.h>
 
 
-const wxString HTML_TEXT(R"RAW(<html>
+const wxString HTML_TEXT(LR"RAW(<html>
 <body style="background-color: %s;">
-<h2><center><u>Gravitate</u></center></h2>
-<p>
-<b>The purpose of the game is to remove all the tiles.</b>
+<h2><center><u><font color=navy>Gravitate</font></u></center></h2>
+<p><font color=navy><center>
+<b>The purpose of the game is to remove all the tiles.</b></center></font>
 </p>
 <p>
 Click a tile that has at least one vertically or
@@ -27,8 +27,22 @@ the score.
 <p>
 Gravitate works like TileFall and the SameGame except that instead of
 tiles falling to the bottom and moving off to the left, they
-&ldquo;gravitate&rdquo; to the middle.
+“gravitate” to the middle.
 </p>
+<hr>
+<table>
+<tr><td><u>Key</u></td><td><u>Action</u></td></tr>
+<tr><td><b>a</b></td><td>Show About box</td></tr>
+<tr><td><b>h</b> or <b>F1</b></td><td>Show Help (this window)</td></tr>
+<tr><td><b>n</b></td><td>New game</td></tr>
+<tr><td><b>o</b></td><td>View or edit options</td></tr>
+<tr><td><b>q</b></td><td>Quit</td></tr>
+<tr><td><b>←</b></td><td>Move focus left</td></tr>
+<tr><td><b>→</b></td><td>Move focus right</td></tr>
+<tr><td><b>↑</b></td><td>Move focus up</td></tr>
+<tr><td><b>↓</b></td><td>Move focus down</td></tr>
+<tr><td><b>Space</b></td><td>Click focused tile</td></tr>
+</table>
 </body></html>)RAW");
 
 

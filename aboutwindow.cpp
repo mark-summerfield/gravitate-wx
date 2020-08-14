@@ -10,11 +10,12 @@
 #include <wx/platinfo.h>
 
 
-const wxString HTML_TEXT(R"RAW(<html>
+const wxString HTML_TEXT(LR"RAW(<html>
 <body style="background-color: %s;">
-<h2><center><u>Gravitate %s</u></center></h2>
+<h2><center><u><font color=navy>Gravitate %s</font></u></center></h2>
 <p>
-<center>A game similar to TileFall/SameGame.</center>
+<center><font color=navy><b>A game similar to
+TileFall/SameGame.</b></font></center>
 </p>
 <p>
 <center>
@@ -24,16 +25,16 @@ const wxString HTML_TEXT(R"RAW(<html>
 <hr>
 <p>
 <center>
-GCC/C++ %s&nbsp;&nbsp;&bull;&nbsp;&nbsp;%s<br>%s
+GCC/C++ %s&nbsp;&nbsp;•&nbsp;&nbsp;%s<br>%s
 </center>
 </p>
 <hr>
 <p>
 <center>
-Copyright &copy; %s Mark Summerfield.<br>All Rights Reserved.
+Copyright © %s Mark Summerfield.<br>All Rights Reserved.
 </center>
 </p>
-<p><small>
+<p><font size=-1 color=#0F0F0F>
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
 Software Foundation, either version 3 of the License, or (at your option)
@@ -41,7 +42,7 @@ any later version. It is provided for education and enjoyment and is
 distributed in the hope that it will be useful, but without any warranty;
 without even the implied warranty of merchantability or fitness for a
 particular purpose. see the GNU General Public License for more details.
-</small></p>
+</font></p>
 </body></html>)RAW");
 
 
