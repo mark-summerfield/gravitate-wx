@@ -9,8 +9,8 @@ aboutwindow.cpp
 helpwindow.hpp
 helpwindow.cpp
 optionswindow.hpp
-optionswindow.cpp # TODO (1)
-boardwidget.hpp # TODO (3)
+optionswindow.cpp
+boardwidget.hpp # TODO 
 boardwidget.cpp # TODO ...
 constants.hpp
 

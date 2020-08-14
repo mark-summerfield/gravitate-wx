@@ -27,6 +27,7 @@ const int DELAY_MS_DEFAULT = 200;
 const int HIGH_SCORE_DEFAULT = 0;
 
 const int TIMEOUT = 5000; // 5 sec
+const int PAD = 5;
 
 const auto FRAME_STYLE = wxDEFAULT_FRAME_STYLE | wxDEFAULT_DIALOG_STYLE |
                          wxRESIZE_BORDER;

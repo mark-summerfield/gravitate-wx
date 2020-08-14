@@ -4,6 +4,8 @@
 #include "constants.hpp"
 #include "helpwindow.hpp"
 
+#include "images/gravitate32.xpm"
+
 #include <wx/html/htmlwin.h>
 
 
@@ -34,6 +36,7 @@ HelpWindow::HelpWindow(wxWindow* parent)
         : wxDialog(parent, wxID_ANY,
                    wxString::Format(L"Help — %s", wxTheApp->GetAppName()),
                    wxDefaultPosition, wxSize(400, 500), FRAME_STYLE) {
+    SetIcon(gravitate32_xpm);
     SetMinSize(wxSize(200, 200));
     auto htmlLabel = new wxHtmlWindow(this);
     auto background = wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE);

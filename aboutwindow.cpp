@@ -3,6 +3,7 @@
 
 #include "aboutwindow.hpp"
 #include "constants.hpp"
+
 #include "images/gravitate32.xpm"
 
 #include <wx/datetime.h>
@@ -48,11 +49,12 @@ AboutWindow::AboutWindow(wxWindow* parent)
         : wxDialog(parent, wxID_ANY,
                    wxString::Format(L"About — %s", wxTheApp->GetAppName()),
                    wxDefaultPosition, wxSize(450, 550), FRAME_STYLE) {
+    SetIcon(gravitate32_xpm);
     SetMinSize(wxSize(200, 200));
     auto iconBitmap = new wxStaticBitmap(this, wxID_ANY,
                                          wxBitmap(gravitate32_xpm));
     auto htmlLabel = new wxHtmlWindow(this);
-    int year = wxDateTime::GetCurrentYear();
+    const int year = wxDateTime::GetCurrentYear();
     auto platform = wxPlatformInfo::Get();
     auto background = wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE);
     htmlLabel->SetPage(wxString::Format(

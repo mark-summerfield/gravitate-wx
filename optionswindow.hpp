@@ -16,8 +16,10 @@ public:
 private:
     void makeWidgets();
     void makeLayout();
+    void setSizes();
     void onOk(wxCommandEvent&);
 
+    wxPanel* panel;
     wxStaticText* columnsLabel;
     wxSpinCtrl* columnsSpinCtrl;
     wxStaticText* rowsLabel;
@@ -27,5 +29,6 @@ private:
     wxStaticText* delayMsLabel;
     wxSpinCtrl* delayMsSpinCtrl;
     wxButton* okButton;
+    wxStaticText* padLabel;
     wxButton* cancelButton;
 };

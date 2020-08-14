@@ -47,7 +47,7 @@ void MainWindow::setTemporaryStatusMessage(const wxString& message,
 void MainWindow::makeWidgets() {
     panel = new wxPanel(this);
     makeToolBar();
-    board = new BoardWidget(this);
+    board = new BoardWidget(panel);
     makeStatusBar();
 }
 
@@ -55,13 +55,19 @@ void MainWindow::makeWidgets() {
 void MainWindow::makeToolBar() {
     auto toolbar = CreateToolBar();
     toolbar->AddTool(wxID_NEW, "New", new32_xpm, "New game (n)");
+    toolbar->AddSeparator();
     toolbar->AddTool(wxID_PREFERENCES, "Options... (o)", options32_xpm,
                      "View or change options");
+    toolbar->AddSeparator();
     toolbar->AddStretchableSpace();
+    toolbar->AddSeparator();
     toolbar->AddTool(wxID_ABOUT, "About (a)", about32_xpm,
                      "About " + wxTheApp->GetAppName());
+    toolbar->AddSeparator();
     toolbar->AddTool(wxID_HELP, "Help (F1)", help32_xpm, "How to play");
+    toolbar->AddSeparator();
     toolbar->AddStretchableSpace();
+    toolbar->AddSeparator();
     toolbar->AddTool(wxID_EXIT, "Quit (q)", quit32_xpm, "Quit the game");
     toolbar->Realize();
 }
@@ -80,9 +86,8 @@ void MainWindow::makeStatusBar() {
 
 void MainWindow::makeLayout() {
     auto sizer = new wxBoxSizer(wxVERTICAL);
-    sizer->Add(board, 1, wxEXPAND);
-    panel->SetSizer(sizer);
-    panel->Fit();
+    sizer->Add(board, 1, wxALL | wxEXPAND, PAD);
+    panel->SetSizerAndFit(sizer);
 }
 
 
@@ -115,7 +120,7 @@ void MainWindow::setPositionAndSize() {
     config->Read(WINDOW_WIDTH, &width, 380);
     int height;
     config->Read(WINDOW_HEIGHT, &height, 440);
-    SetSize(width, height);
+    SetClientSize(width, height);
 }
 
 
@@ -151,29 +156,27 @@ void MainWindow::onClose(wxCloseEvent&) {
 
 void MainWindow::saveConfig() {
     std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
-    auto pos = GetPosition();
+    const auto pos = GetPosition();
     config->Write(WINDOW_X, pos.x);
     config->Write(WINDOW_Y, pos.y);
-    auto size = GetSize();
+    const auto size = GetClientSize();
     config->Write(WINDOW_WIDTH, size.GetWidth());
     config->Write(WINDOW_HEIGHT, size.GetHeight());
 }
 
 
 void MainWindow::onNew(wxCommandEvent&) {
-    if (starting) {
+    if (starting)
         starting = false;
-    }
-    else {
+    else
         SetStatusText("");
-    }
     board->newGame();
     board->SetFocus();
 }
 
 
 void MainWindow::onGameOver(wxCommandEvent& event) {
-    int score = event.GetInt();
+    const int score = event.GetInt();
     std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
     int highScore;
     config->Read(HIGH_SCORE, &highScore, HIGH_SCORE_DEFAULT);
@@ -182,7 +185,7 @@ void MainWindow::onGameOver(wxCommandEvent& event) {
         outcome = "You won";
         if (score > highScore) {
             outcome += " with a new highscore";
-            config->Write(HIGH_SCORE, highScore);
+            config->Write(HIGH_SCORE, score);
         }
         outcome += '!';
     }

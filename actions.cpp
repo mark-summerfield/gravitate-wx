@@ -21,6 +21,8 @@ void onOptions(MainWindow *parent) {
     if (optionsWindow.ShowModal() == wxID_OK)
         parent->setTemporaryStatusMessage(
             "Updated Options: Click New to use them", TIMEOUT * 2);
+    else
+        parent->SetStatusText("");
 }
 
 

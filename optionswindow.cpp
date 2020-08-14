@@ -5,77 +5,98 @@
 #include "constants.hpp"
 #include "optionswindow.hpp"
 
+#include "images/gravitate32.xpm"
+
 #include <wx/config.h>
 #include <wx/gbsizer.h>
 
+#include <cmath>
 #include <memory>
 
 
 OptionsWindow::OptionsWindow(wxWindow* parent)
         : wxDialog(parent, wxID_ANY, wxString::Format(
                    L"Options — %s", wxTheApp->GetAppName())) {
+    SetIcon(gravitate32_xpm);
     makeWidgets();
     makeLayout();
+    setSizes();
     Bind(wxEVT_BUTTON, &OptionsWindow::onOk, this, wxID_OK);
 }
 
 
 void OptionsWindow::makeWidgets() {
-    auto style = wxSP_ARROW_KEYS | wxALIGN_RIGHT;
+    const auto style = wxSP_ARROW_KEYS | wxALIGN_RIGHT;
     std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
-    columnsLabel = new wxStaticText(this, wxID_ANY, "Co&lumns");
+    panel = new wxPanel(this);
+    columnsLabel = new wxStaticText(panel, wxID_ANY, "Co&lumns");
     int n;
     config->Read(COLUMNS, &n, COLUMNS_DEFAULT);
     columnsSpinCtrl = new wxSpinCtrl(
-        this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+        panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
         style, 5, 30, n);
-    rowsLabel = new wxStaticText(this, wxID_ANY, "&Rows");
+    rowsLabel = new wxStaticText(panel, wxID_ANY, "&Rows");
     config->Read(ROWS, &n, ROWS_DEFAULT);
     rowsSpinCtrl = new wxSpinCtrl(
-        this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+        panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
         style, 5, 30, n);
-    maxColorsLabel = new wxStaticText(this, wxID_ANY, "&Max. Colors");
+    maxColorsLabel = new wxStaticText(panel, wxID_ANY, "&Max. Colors");
     config->Read(MAX_COLORS, &n, MAX_COLORS_DEFAULT);
     maxColorsSpinCtrl = new wxSpinCtrl(
-        this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+        panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
         style, 2, BoardWidget::colorMap().size(), n);
-    delayMsLabel = new wxStaticText(this, wxID_ANY, "&Delay (ms)");
+    delayMsLabel = new wxStaticText(panel, wxID_ANY, "&Delay (ms)");
     config->Read(DELAY_MS, &n, DELAY_MS_DEFAULT);
     delayMsSpinCtrl = new wxSpinCtrl(
-        this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
+        panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
         style, 0, 1000, n);
-    okButton = new wxButton(this, wxID_OK);
-    cancelButton = new wxButton(this, wxID_CANCEL);
+    okButton = new wxButton(panel, wxID_OK, "&OK");
+    padLabel = new wxStaticText(panel, wxID_ANY, " ");
+    cancelButton = new wxButton(panel, wxID_CANCEL, "&Cancel");
+}
+
+
+void OptionsWindow::setSizes() {
+    auto size = cancelButton->GetBestSize();
+    padLabel->SetMaxSize(wxSize(PAD * 2, size.GetHeight()));
+    okButton->SetMaxSize(size);
+    cancelButton->SetMaxSize(size);
+    size = delayMsSpinCtrl->GetBestSize();
+    wxSpinCtrl* spinners[]{columnsSpinCtrl, rowsSpinCtrl, maxColorsSpinCtrl,
+                           delayMsSpinCtrl};
+    size = wxSize(std::round(size.GetWidth() * 1.5), size.GetHeight());
+    for (auto& spinner: spinners)
+        spinner->SetMinSize(size);
 }
 
 
 void OptionsWindow::makeLayout() {
-    auto flag = wxALL;
-    auto flagX = wxALL | wxEXPAND;
-    int border = 3;
-    auto grid = new wxGridBagSizer;
-    grid->Add(columnsLabel, wxGBPosition(0, 0), wxDefaultSpan, flag,
-              border);
-    grid->Add(columnsSpinCtrl, wxGBPosition(0, 1), wxDefaultSpan, flagX,
-              border);
-    grid->Add(rowsLabel, wxGBPosition(1, 0), wxDefaultSpan, flag, border);
-    grid->Add(rowsSpinCtrl, wxGBPosition(1, 1), wxDefaultSpan, flagX,
-              border);
-    grid->Add(maxColorsLabel, wxGBPosition(2, 0), wxDefaultSpan, flag,
-              border);
-    grid->Add(maxColorsSpinCtrl, wxGBPosition(2, 1), wxDefaultSpan, flagX,
-              border);
-    grid->Add(delayMsLabel, wxGBPosition(3, 0), wxDefaultSpan, flag,
-              border);
-    grid->Add(delayMsSpinCtrl, wxGBPosition(3, 1), wxDefaultSpan, flagX,
-              border);
+    const auto flag = wxALL;
+    auto grid = new wxGridBagSizer(PAD, PAD * 2);
+    grid->Add(columnsLabel, wxGBPosition(0, 0), wxDefaultSpan, flag, PAD);
+    grid->Add(columnsSpinCtrl, wxGBPosition(0, 1), wxDefaultSpan, flag,
+              PAD);
+    grid->Add(rowsLabel, wxGBPosition(1, 0), wxDefaultSpan, flag, PAD);
+    grid->Add(rowsSpinCtrl, wxGBPosition(1, 1), wxDefaultSpan, flag, PAD);
+    grid->Add(maxColorsLabel, wxGBPosition(2, 0), wxDefaultSpan, flag, PAD);
+    grid->Add(maxColorsSpinCtrl, wxGBPosition(2, 1), wxDefaultSpan, flag,
+              PAD);
+    grid->Add(delayMsLabel, wxGBPosition(3, 0), wxDefaultSpan, flag, PAD);
+    grid->Add(delayMsSpinCtrl, wxGBPosition(3, 1), wxDefaultSpan, flag,
+              PAD);
     auto sizer = new wxBoxSizer(wxHORIZONTAL);
-    sizer->Add(okButton, flag, border);
-    sizer->Add(cancelButton, flag, border);
-    grid->Add(sizer, wxGBPosition(4, 0), wxGBSpan(1, 2), wxEXPAND);
+    sizer->AddStretchSpacer();
+    sizer->Add(okButton, flag, PAD);
+    sizer->Add(padLabel, flag, PAD);
+    sizer->Add(cancelButton, flag, PAD);
+    sizer->AddStretchSpacer();
+    grid->Add(sizer, wxGBPosition(4, 0), wxGBSpan(1, 2), flag | wxEXPAND,
+              PAD);
     grid->AddGrowableCol(1);
-    SetSizer(grid);
-    Fit();
+    panel->SetSizerAndFit(grid);
+    sizer = new wxBoxSizer(wxVERTICAL);
+    sizer->Add(panel, 1, wxALL | wxEXPAND, PAD);
+    SetSizerAndFit(sizer);
 }
 
 
