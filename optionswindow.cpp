@@ -59,11 +59,12 @@ void OptionsWindow::makeWidgets() {
     delayMsSpinCtrl->SetToolTip(wxString::Format(
         "How long to show tile movement in milliseconds (1/1000ths second) "
         "[default %d]", DELAY_MS_DEFAULT));
-    okButton = new wxButton(panel, wxID_OK, "&OK");
+    okButton = new wxButton(panel, wxID_OK, L"✔ &OK");
+    okButton->SetDefault();
     okButton->SetToolTip("Confirm option choices: these will take effect "
                          "when you click New for a new game");
     padLabel = new wxStaticText(panel, wxID_ANY, " ");
-    cancelButton = new wxButton(panel, wxID_CANCEL, "&Cancel");
+    cancelButton = new wxButton(panel, wxID_CANCEL, L"✘ &Cancel");
     cancelButton->SetToolTip("Leave the option choices unchanged");
 }
 
