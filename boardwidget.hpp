@@ -8,12 +8,17 @@
 #endif
 
 #include <unordered_map>
+#include <vector>
+
+
+using ColorMap = std::unordered_map<std::string, std::string>;
+using ColorVector = std::vector<std::string>;
+using TileRow = std::vector<std::string>;
+using TileGrid = std::vector<TileRow>;
 
 
 wxDECLARE_EVENT(SCORE_EVENT, wxCommandEvent);
 wxDECLARE_EVENT(GAME_OVER_EVENT, wxCommandEvent);
-
-using ColorMap = std::unordered_map<std::string, std::string>;
 
 
 class BoardWidget : public wxWindow {
@@ -27,12 +32,16 @@ public:
 private:
     void announceScore();
     void announceGameOver(const wxString&);
+    ColorVector getColors(int maxColors);
+    void draw();
+
+    void onPaint(wxPaintEvent&);
+    void onChar(wxKeyEvent&);
+    void onClick(wxMouseEvent&);
 
     int score;
     bool gameOver;
     bool drawing;
-    int columns;
-    int rows;
-    int maxColors;
-    int delayMs;
+    wxPoint selected;
+    TileGrid tiles;
 };
