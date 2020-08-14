@@ -56,19 +56,18 @@ void MainWindow::makeToolBar() {
     auto toolbar = CreateToolBar();
     toolbar->AddTool(wxID_NEW, "New", new32_xpm, "New game (n)");
     toolbar->AddSeparator();
-    toolbar->AddTool(wxID_PREFERENCES, "Options... (o)", options32_xpm,
-                     "View or change options");
+    toolbar->AddTool(wxID_PREFERENCES, "Options", options32_xpm,
+                     "View or change options (o)");
     toolbar->AddSeparator();
     toolbar->AddStretchableSpace();
     toolbar->AddSeparator();
-    toolbar->AddTool(wxID_ABOUT, "About (a)", about32_xpm,
-                     "About " + wxTheApp->GetAppName());
+    toolbar->AddTool(wxID_ABOUT, "About", about32_xpm, "About (a)");
     toolbar->AddSeparator();
-    toolbar->AddTool(wxID_HELP, "Help (F1)", help32_xpm, "How to play");
+    toolbar->AddTool(wxID_HELP, "Help", help32_xpm, "How to play (F1)");
     toolbar->AddSeparator();
     toolbar->AddStretchableSpace();
     toolbar->AddSeparator();
-    toolbar->AddTool(wxID_EXIT, "Quit (q)", quit32_xpm, "Quit the game");
+    toolbar->AddTool(wxID_EXIT, "Quit", quit32_xpm, "Quit the game (q)");
     toolbar->Realize();
 }
 

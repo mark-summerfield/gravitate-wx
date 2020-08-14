@@ -34,4 +34,3 @@ const auto FRAME_STYLE = wxDEFAULT_FRAME_STYLE | wxDEFAULT_DIALOG_STYLE |
 
 const wxString LOST("LOST");
 const wxString WON("WON");
-

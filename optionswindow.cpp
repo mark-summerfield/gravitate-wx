@@ -35,24 +35,36 @@ void OptionsWindow::makeWidgets() {
     columnsSpinCtrl = new wxSpinCtrl(
         panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
         style, 5, 30, n);
+    columnsSpinCtrl->SetToolTip(wxString::Format(
+        "How many columns of tiles to use [default %d]", COLUMNS_DEFAULT));
     rowsLabel = new wxStaticText(panel, wxID_ANY, "&Rows");
     config->Read(ROWS, &n, ROWS_DEFAULT);
     rowsSpinCtrl = new wxSpinCtrl(
         panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
         style, 5, 30, n);
+    rowsSpinCtrl->SetToolTip(wxString::Format(
+        "How many rows of tiles to use [default %d]", ROWS_DEFAULT));
     maxColorsLabel = new wxStaticText(panel, wxID_ANY, "&Max. Colors");
     config->Read(MAX_COLORS, &n, MAX_COLORS_DEFAULT);
     maxColorsSpinCtrl = new wxSpinCtrl(
         panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
         style, 2, BoardWidget::colorMap().size(), n);
+    maxColorsSpinCtrl->SetToolTip(wxString::Format(
+        "How many colors to use [default %d]", MAX_COLORS_DEFAULT));
     delayMsLabel = new wxStaticText(panel, wxID_ANY, "&Delay (ms)");
     config->Read(DELAY_MS, &n, DELAY_MS_DEFAULT);
     delayMsSpinCtrl = new wxSpinCtrl(
         panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
         style, 0, 1000, n);
+    delayMsSpinCtrl->SetToolTip(wxString::Format(
+        "How long to show tile movement in milliseconds (1/1000ths second) "
+        "[default %d]", DELAY_MS_DEFAULT));
     okButton = new wxButton(panel, wxID_OK, "&OK");
+    okButton->SetToolTip("Confirm option choices: these will take effect "
+                         "when you click New for a new game");
     padLabel = new wxStaticText(panel, wxID_ANY, " ");
     cancelButton = new wxButton(panel, wxID_CANCEL, "&Cancel");
+    cancelButton->SetToolTip("Leave the option choices unchanged");
 }
 
 
