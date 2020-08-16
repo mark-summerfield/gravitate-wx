@@ -59,12 +59,12 @@ void OptionsWindow::makeWidgets() {
     delayMsSpinCtrl->SetToolTip(wxString::Format(
         "How long to show tile movement in milliseconds (1/1000ths second) "
         "[default %d]", DELAY_MS_DEFAULT));
-    okButton = new wxButton(panel, wxID_OK, L"✔ &OK");
+    okButton = new wxButton(panel, wxID_OK, L"✓ &OK");
     okButton->SetDefault();
     okButton->SetToolTip("Confirm option choices: these will take effect "
                          "when you click New for a new game");
     padLabel = new wxStaticText(panel, wxID_ANY, " ");
-    cancelButton = new wxButton(panel, wxID_CANCEL, L"✘ &Cancel");
+    cancelButton = new wxButton(panel, wxID_CANCEL, L"✕ &Cancel");
     cancelButton->SetToolTip("Leave the option choices unchanged");
 }
 
@@ -97,17 +97,14 @@ void OptionsWindow::makeLayout() {
     grid->Add(delayMsLabel, wxGBPosition(3, 0), wxDefaultSpan, flag, PAD);
     grid->Add(delayMsSpinCtrl, wxGBPosition(3, 1), wxDefaultSpan, flag,
               PAD);
-    auto sizer = new wxBoxSizer(wxHORIZONTAL);
-    sizer->AddStretchSpacer();
-    sizer->Add(okButton, flag, PAD);
-    sizer->Add(padLabel, flag, PAD);
-    sizer->Add(cancelButton, flag, PAD);
-    sizer->AddStretchSpacer();
-    grid->Add(sizer, wxGBPosition(4, 0), wxGBSpan(1, 2), flag | wxEXPAND,
-              PAD);
+    auto buttonSizer = new wxStdDialogButtonSizer;
+    buttonSizer->AddButton(okButton);
+    buttonSizer->AddButton(cancelButton);
+    buttonSizer->Realize();
+    grid->Add(buttonSizer, wxGBPosition(4, 0), wxGBSpan(1, 2), flag, PAD);
     grid->AddGrowableCol(1);
     panel->SetSizerAndFit(grid);
-    sizer = new wxBoxSizer(wxVERTICAL);
+    auto sizer = new wxBoxSizer(wxVERTICAL);
     sizer->Add(panel, 1, wxALL | wxEXPAND, PAD);
     SetSizerAndFit(sizer);
 }
