@@ -85,7 +85,7 @@ void OptionsWindow::setSizes() {
 
 void OptionsWindow::makeLayout() {
     const auto flag = wxALL;
-    auto grid = new wxGridBagSizer(PAD, PAD * 2);
+    auto grid = new wxGridBagSizer;
     grid->Add(columnsLabel, wxGBPosition(0, 0), wxDefaultSpan, flag, PAD);
     grid->Add(columnsSpinCtrl, wxGBPosition(0, 1), wxDefaultSpan, flag,
               PAD);
@@ -97,19 +97,16 @@ void OptionsWindow::makeLayout() {
     grid->Add(delayMsLabel, wxGBPosition(3, 0), wxDefaultSpan, flag, PAD);
     grid->Add(delayMsSpinCtrl, wxGBPosition(3, 1), wxDefaultSpan, flag,
               PAD);
-    auto sizer = new wxBoxSizer(wxHORIZONTAL);
-    sizer->AddStretchSpacer();
-    sizer->Add(okButton, flag, PAD);
-    sizer->Add(padLabel, flag, PAD);
-    sizer->Add(cancelButton, flag, PAD);
-    sizer->AddStretchSpacer();
-    grid->Add(sizer, wxGBPosition(4, 0), wxGBSpan(1, 2), flag | wxEXPAND,
-              PAD);
-    grid->AddGrowableCol(1);
+    auto buttonSizer = new wxStdDialogButtonSizer;
+    buttonSizer->AddButton(okButton);
+    buttonSizer->AddButton(cancelButton);
+    buttonSizer->Realize();
+    grid->Add(buttonSizer, wxGBPosition(4, 0), wxGBSpan(1, 2), flag,
+              PAD * 2);
     panel->SetSizerAndFit(grid);
-    sizer = new wxBoxSizer(wxVERTICAL);
-    sizer->Add(panel, 1, wxALL | wxEXPAND, PAD);
-    SetSizerAndFit(sizer);
+    auto mainSizer = new wxBoxSizer(wxVERTICAL);
+    mainSizer->Add(panel, 1, wxALL | wxEXPAND, PAD);
+    SetSizerAndFit(mainSizer);
 }
 
 
