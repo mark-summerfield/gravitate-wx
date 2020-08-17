@@ -17,12 +17,14 @@ wxDEFINE_EVENT(SCORE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(GAME_OVER_EVENT, wxCommandEvent);
 
 
-const wxString BACKGROUND("#FFFEE0");
+const auto BACKGROUND_COLOR = wxColour("#FFFEE0");
+const auto EMPTY_COLOR = wxColour("#010101");
 
 
 BoardWidget::BoardWidget(wxWindow* parent)
         : wxWindow(parent, wxID_ANY), score(0), gameOver(true),
-          drawing(false), columns(COLUMNS_DEFAULT), rows(ROWS_DEFAULT) {
+          drawing(false), dimming(false), columns(COLUMNS_DEFAULT),
+          rows(ROWS_DEFAULT) {
     SetDoubleBuffered(true);
     Bind(wxEVT_LEFT_DOWN, &BoardWidget::onClick, this);
     Bind(wxEVT_CHAR_HOOK, &BoardWidget::onChar, this);
@@ -57,18 +59,18 @@ void BoardWidget::newGame() {
 
 
 ColorVector BoardWidget::getColors(int maxColors, Randomizer &randomizer) {
-    auto colourMap = colorMap();
+    auto colourMap = colorNameMap();
     ColorVector colors;
     for (auto it = colourMap.cbegin(); it != colourMap.cend(); ++it)
-        colors.push_back(it->first);
+        colors.push_back(wxColour(it->first));
     std::shuffle(colors.begin(), colors.end(), randomizer);
     colors.resize(maxColors);
     return colors;
 }
 
 
-const ColorMap& BoardWidget::colorMap() {
-    static ColorMap colors;
+const ColorNameMap& BoardWidget::colorNameMap() {
+    static ColorNameMap colors;
     if (colors.empty())
         colors = {
             {"#000080", "#9999F9"},
@@ -127,6 +129,13 @@ void BoardWidget::onChar(wxKeyEvent& event) {
 }
 
 
+wxSize BoardWidget::DoGetBestClientSize() const {
+    auto rect = GetRect();
+    int size = std::min(rect.width, rect.height);
+    return wxSize(size, size);
+}
+
+
 void BoardWidget::onPaint(wxPaintEvent&) {
     if (tiles.empty())
         return;
@@ -153,16 +162,42 @@ void BoardWidget::drawTile(wxGraphicsContext* gc, int x, int y, int width,
     const int x1 = x * width;
     const int y1 = y * height;
     const auto color = tiles[x][y];
-    if (color.empty()) {
-        gc->SetBrush(wxBrush(wxColour(BACKGROUND)));
+    if (color == EMPTY_COLOR) {
+        gc->SetBrush(wxBrush(BACKGROUND_COLOR));
         gc->DrawRectangle(x1, y1, width, height);
     }
     else {
         const int x2 = x1 + width;
         const int y2 = y2 + height;
+        const auto colorPair = getColorPair(color);
+        //drawSegments(gc, edge, colorPair, x1, y1, x2, y2); // TODO
+        auto brush = gc->CreateLinearGradientBrush(
+            x1, y1, x2, y2, colorPair.light, colorPair.dark);
+        gc->SetBrush(brush);
+        gc->DrawRectangle(x1 + edge, y1 + edge, width - edge2,
+                          height - edge2);
+        if (selected == wxPoint(x, y))
+            ; // drawFocus(gc, x1, y1, edge, width, height); // TODO
     }
 }
 
 
-//ColorPair BoardWidget::getColorPair(const std::string& color) const {
-//}
+ColorPair BoardWidget::getColorPair(const wxColour& color) const {
+    ColorPair colorPair;
+    if (dimming) {
+        colorPair.light = color;
+        colorPair.dark = color.ChangeLightness(60);
+    }
+    else {
+        const auto hexColor = color.GetAsString(wxC2S_HTML_SYNTAX);
+        auto nameMap = colorNameMap();
+        const auto lightColor = nameMap[std::string(hexColor)];
+        colorPair.light = wxColour(lightColor);
+        colorPair.dark = color;
+        if (gameOver) {
+            colorPair.light = colorPair.light.ChangeLightness(85);
+            colorPair.dark = colorPair.dark.ChangeLightness(85);
+        }
+    }
+    return colorPair;
+}

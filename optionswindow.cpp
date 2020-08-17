@@ -48,7 +48,7 @@ void OptionsWindow::makeWidgets() {
     config->Read(MAX_COLORS, &n, MAX_COLORS_DEFAULT);
     maxColorsSpinCtrl = new wxSpinCtrl(
         panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
-        style, 2, BoardWidget::colorMap().size(), n);
+        style, 2, BoardWidget::colorNameMap().size(), n);
     maxColorsSpinCtrl->SetToolTip(wxString::Format(
         "How many colors to use [default %d]", MAX_COLORS_DEFAULT));
     delayMsLabel = new wxStaticText(panel, wxID_ANY, "&Delay (ms)");
