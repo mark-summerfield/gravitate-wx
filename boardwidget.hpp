@@ -6,14 +6,17 @@
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif
+#include <wx/graphics.h>
 
 #include <random>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 
 using ColorMap = std::unordered_map<std::string, std::string>;
 using ColorVector = std::vector<std::string>;
+using ColorPair = std::pair<wxColour, wxColour>;
 using TileRow = std::vector<std::string>;
 using TileGrid = std::vector<TileRow>;
 using Randomizer = std::default_random_engine;
@@ -35,7 +38,11 @@ private:
     void announceScore();
     void announceGameOver(const wxString&);
     ColorVector getColors(int maxColors, Randomizer&);
-    void draw();
+    void draw(int delayMs=0, bool force=false);
+    wxSize tileSize() const;
+    void drawTile(wxGraphicsContext* gc, int x, int y, int width,
+                  int height, int edge, int edge2);
+    ColorPair getColorPair(const std::string& color) const;
 
     void onPaint(wxPaintEvent&);
     void onChar(wxKeyEvent&);
@@ -44,6 +51,8 @@ private:
     int score;
     bool gameOver;
     bool drawing;
+    int columns;
+    int rows;
     wxPoint selected;
     TileGrid tiles;
 };

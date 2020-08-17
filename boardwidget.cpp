@@ -5,6 +5,8 @@
 #include "constants.hpp"
 
 #include <wx/config.h>
+#include <wx/dcclient.h>
+#include <wx/utils.h>
 
 #include <algorithm>
 #include <chrono>
@@ -20,7 +22,7 @@ const wxString BACKGROUND("#FFFEE0");
 
 BoardWidget::BoardWidget(wxWindow* parent)
         : wxWindow(parent, wxID_ANY), score(0), gameOver(true),
-          drawing(false) {
+          drawing(false), columns(COLUMNS_DEFAULT), rows(ROWS_DEFAULT) {
     SetDoubleBuffered(true);
     Bind(wxEVT_LEFT_DOWN, &BoardWidget::onClick, this);
     Bind(wxEVT_CHAR_HOOK, &BoardWidget::onChar, this);
@@ -40,9 +42,7 @@ void BoardWidget::newGame() {
     int maxColors;
     config->Read(MAX_COLORS, &maxColors, MAX_COLORS_DEFAULT);
     const auto colors = getColors(maxColors, randomizer);
-    int columns;
     config->Read(COLUMNS, &columns, COLUMNS_DEFAULT);
-    int rows;
     config->Read(ROWS, &rows, ROWS_DEFAULT);
     std::uniform_int_distribution<int> distribution(0, maxColors - 1);
     tiles.clear();
@@ -101,8 +101,18 @@ void BoardWidget::announceGameOver(const wxString& outcome) {
 }
 
 
-void BoardWidget::draw() {
-    std::cout << "draw" << std::endl;
+void BoardWidget::draw(int delayMs, bool force) {
+    if (delayMs)
+        wxMilliSleep(delayMs);
+    Refresh();
+    if (force)
+        Update();
+}
+
+
+wxSize BoardWidget::tileSize() const {
+    auto rect = GetRect();
+    return wxSize(rect.width / columns, rect.height / rows);
 }
 
 
@@ -118,5 +128,41 @@ void BoardWidget::onChar(wxKeyEvent& event) {
 
 
 void BoardWidget::onPaint(wxPaintEvent&) {
-    std::cout << "onPaint" << std::endl;
+    if (tiles.empty())
+        return;
+    drawing = true;
+    wxPaintDC dc(this);
+    auto gc = wxGraphicsContext::Create(dc);
+    if (gc) {
+        const auto size = tileSize();
+        const int width = size.GetWidth();
+        const int height = size.GetHeight();
+        const int edge = std::min(width, height) / 9;
+        const int edge2 = edge * 2;
+        for (int x = 0; x < columns; ++x)
+            for (int y = 0; y < rows; ++y)
+                drawTile(gc, x, y, width, height, edge, edge2);
+        delete gc;
+    }
+    drawing = false;
 }
+
+
+void BoardWidget::drawTile(wxGraphicsContext* gc, int x, int y, int width,
+                           int height, int edge, int edge2) {
+    const int x1 = x * width;
+    const int y1 = y * height;
+    const auto color = tiles[x][y];
+    if (color.empty()) {
+        gc->SetBrush(wxBrush(wxColour(BACKGROUND)));
+        gc->DrawRectangle(x1, y1, width, height);
+    }
+    else {
+        const int x2 = x1 + width;
+        const int y2 = y2 + height;
+    }
+}
+
+
+//ColorPair BoardWidget::getColorPair(const std::string& color) const {
+//}
