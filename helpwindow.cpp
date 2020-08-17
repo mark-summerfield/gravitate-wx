@@ -11,7 +11,7 @@
 
 const wxString HTML_TEXT(LR"RAW(<html>
 <body style="background-color: %s;">
-<h2><center><u><font color=navy>Gravitate</font></u></center></h2>
+<h2><center><font color=navy>Gravitate</font></center></h2>
 <p><font color=navy><center>
 <b>The purpose of the game is to remove all the tiles.</b></center></font>
 </p>

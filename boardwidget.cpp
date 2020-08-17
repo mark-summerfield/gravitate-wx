@@ -2,7 +2,6 @@
 // License: GPLv3
 
 #include "boardwidget.hpp"
-#include "constants.hpp"
 
 #include <wx/config.h>
 #include <wx/dcclient.h>
@@ -112,9 +111,9 @@ void BoardWidget::draw(int delayMs, bool force) {
 }
 
 
-wxSize BoardWidget::tileSize() const {
+TileSize BoardWidget::tileSize() const {
     auto rect = GetRect();
-    return wxSize(rect.width / columns, rect.height / rows);
+    return {rect.width / double(columns), rect.height / double(rows)};
 }
 
 
@@ -144,13 +143,11 @@ void BoardWidget::onPaint(wxPaintEvent&) {
     auto gc = wxGraphicsContext::Create(dc);
     if (gc) {
         const auto size = tileSize();
-        const int width = size.GetWidth();
-        const int height = size.GetHeight();
-        const int edge = std::min(width, height) / 9;
-        const int edge2 = edge * 2;
+        const double edge = std::min(size.width, size.height) / 9.0;
+        const double edge2 = edge * 2.0;
         for (int x = 0; x < columns; ++x)
             for (int y = 0; y < rows; ++y)
-                drawTile(gc, x, y, width, height, edge, edge2);
+                drawTile(gc, x, y, size.width, size.height, edge, edge2);
         delete gc;
     }
     drawing = false;
@@ -178,18 +175,19 @@ ColorPair BoardWidget::getColorPair(const wxColour& color) const {
 }
 
 
-void BoardWidget::drawTile(wxGraphicsContext* gc, int x, int y, int width,
-                           int height, int edge, int edge2) {
-    const int x1 = x * width;
-    const int y1 = y * height;
+void BoardWidget::drawTile(wxGraphicsContext* gc, int x, int y,
+                           double width, double height, double edge,
+                           double edge2) {
+    const double x1 = x * width;
+    const double y1 = y * height;
     const auto color = tiles[x][y];
     if (color == EMPTY_COLOR) {
         gc->SetBrush(wxBrush(BACKGROUND_COLOR));
         gc->DrawRectangle(x1, y1, width, height);
     }
     else {
-        const int x2 = x1 + width;
-        const int y2 = y2 + height;
+        const double x2 = x1 + width;
+        const double y2 = y1 + height;
         const auto colorPair = getColorPair(color);
         drawSegments(gc, edge, colorPair, x1, y1, x2, y2);
         auto brush = gc->CreateLinearGradientBrush(
@@ -203,20 +201,38 @@ void BoardWidget::drawTile(wxGraphicsContext* gc, int x, int y, int width,
 }
 
 
-void BoardWidget::drawSegments(wxGraphicsContext* gc, int edge,
-                               const ColorPair& colorPair, int x1, int y1,
-                               int x2, int y2) {
-std::cout << "drawSegments\n";
+void BoardWidget::drawSegments(wxGraphicsContext* gc, double edge,
+                               const ColorPair& colorPair, double x1,
+                               double y1, double x2, double y2) {
+    drawSegment(gc, colorPair.light, {{x1, y1}, {x1 + edge, y1 + edge},
+                {x2 - edge, y1 + edge}, {x2, y1}});
+    drawSegment(gc, colorPair.light, {{x1, y1}, {x1, y2},
+                {x1 + edge, y2 - edge}, {x1 + edge, y1 + edge}});
+    drawSegment(gc, colorPair.dark, {{x2 - edge, y1 + edge}, {x2, y1},
+                {x2, y2}, {x2 - edge, y2 - edge}});
+    drawSegment(gc, colorPair.dark, {{x1, y2}, {x1 + edge, y2 - edge},
+                {x2 - edge, y2 - edge}, {x2, y2}});
 }
 
 
-void BoardWidget::drawSegment(wxGraphicsContext* gc, int edge,
-                              const wxColour& color, const Coords& coords) {
-std::cout << "drawSegment\n";
+void BoardWidget::drawSegment(wxGraphicsContext* gc, const wxColour& color,
+                              const Coords& coords) {
+    auto path = gc->CreatePath();
+    path.MoveToPoint(coords[0][0], coords[0][1]);
+    for (int i = 1; i < COORDS_LEN; ++i)
+        path.AddLineToPoint(coords[i][0], coords[i][1]);
+    path.CloseSubpath();
+    gc->SetBrush(wxBrush(color));
+    gc->FillPath(path);
 }
 
 
-void BoardWidget::drawFocus(wxGraphicsContext* gc, int x1, int y1, int edge,
-                            int width, int height) {
-std::cout << "drawFocus\n";
+void BoardWidget::drawFocus(wxGraphicsContext* gc, double x1, double y1,
+                            double edge, double width, double height) {
+    gc->SetBrush(wxBrush());
+    edge *= 4 / 3;
+    const double edge2 = edge * 2;
+    gc->SetPen(wxPen(*wxBLACK, 1, wxPENSTYLE_DOT));
+    gc->DrawRectangle(x1 + edge, y1 + edge, width - edge2, height - edge2);
+    gc->SetPen(wxPen());
 }

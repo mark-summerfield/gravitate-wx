@@ -12,7 +12,7 @@
 
 const wxString HTML_TEXT(LR"RAW(<html>
 <body style="background-color: %s;">
-<h2><center><u><font color=navy>Gravitate %s</font></u></center></h2>
+<h2><center><font color=navy>Gravitate %s</font></center></h2>
 <p>
 <center><font color=navy><b>A game similar to
 TileFall/SameGame.</b></font></center>

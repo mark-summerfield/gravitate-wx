@@ -28,6 +28,7 @@ const int HIGH_SCORE_DEFAULT = 0;
 
 const int TIMEOUT = 5000; // 5 sec
 const int PAD = 5;
+const int COORDS_LEN = 4;
 
 const auto FRAME_STYLE = wxDEFAULT_FRAME_STYLE | wxDEFAULT_DIALOG_STYLE |
                          wxRESIZE_BORDER;
