@@ -23,7 +23,7 @@ const auto EMPTY_COLOR = wxColour("#010101");
 BoardWidget::BoardWidget(wxWindow* parent)
         : wxWindow(parent, wxID_ANY), score(0), gameOver(true),
           drawing(false), dimming(false), columns(COLUMNS_DEFAULT),
-          rows(ROWS_DEFAULT) {
+          rows(ROWS_DEFAULT), selectedX(-1), selectedY(-1) {
     SetDoubleBuffered(true);
     Bind(wxEVT_LEFT_DOWN, &BoardWidget::onClick, this);
     Bind(wxEVT_CHAR_HOOK, &BoardWidget::onChar, this);
@@ -35,7 +35,7 @@ BoardWidget::BoardWidget(wxWindow* parent)
 void BoardWidget::newGame() {
     gameOver = false;
     score = 0;
-    selected.x = selected.y = 0;
+    selectedX = selectedY = -1;
     const auto seed = std::chrono::system_clock::now().time_since_epoch()
         .count();
     Randomizer randomizer(seed);
@@ -71,7 +71,7 @@ ColorVector BoardWidget::getColors(int maxColors, Randomizer &randomizer) {
 const ColorNameMap& BoardWidget::colorNameMap() {
     static ColorNameMap colors;
     if (colors.empty())
-        colors = {
+        colors = { // key=dark, value=light
             {"#000080", "#9999F9"},
             {"#008000", "#99F999"},
             {"#008080", "#99F9F9"},
@@ -113,7 +113,8 @@ void BoardWidget::draw(int delayMs, bool force) {
 
 TileSize BoardWidget::tileSize() const {
     auto rect = GetRect();
-    return {rect.width / double(columns), rect.height / double(rows)};
+    return {rect.width / static_cast<double>(columns),
+            rect.height / static_cast<double>(rows)};
 }
 
 
@@ -195,7 +196,7 @@ void BoardWidget::drawTile(wxGraphicsContext* gc, int x, int y,
         gc->SetBrush(brush);
         gc->DrawRectangle(x1 + edge, y1 + edge, width - edge2,
                           height - edge2);
-        if (selected == wxPoint(x, y))
+        if (selectedX == x && selectedY == y)
             drawFocus(gc, x1, y1, edge, width, height);
     }
 }

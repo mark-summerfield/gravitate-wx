@@ -76,6 +76,7 @@ private:
     bool dimming;
     int columns;
     int rows;
-    wxPoint selected;
+    int selectedX;
+    int selectedY;
     TileGrid tiles;
 };
