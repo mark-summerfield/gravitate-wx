@@ -42,7 +42,7 @@ private:
     wxSize tileSize() const;
     void drawTile(wxGraphicsContext* gc, int x, int y, int width,
                   int height, int edge, int edge2);
-    ColorPair getColorPair(const std::string& color) const;
+//    ColorPair getColorPair(const std::string& color) const;
 
     void onPaint(wxPaintEvent&);
     void onChar(wxKeyEvent&);
