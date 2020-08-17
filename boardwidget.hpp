@@ -18,6 +18,7 @@ using ColorVector = std::vector<wxColour>;
 using TileRow = std::vector<wxColour>;
 using TileGrid = std::vector<TileRow>;
 using Randomizer = std::default_random_engine;
+using Coords = std::vector<wxPoint>;
 
 
 wxDECLARE_EVENT(SCORE_EVENT, wxCommandEvent);
@@ -44,9 +45,16 @@ private:
     ColorVector getColors(int maxColors, Randomizer&);
     void draw(int delayMs=0, bool force=false);
     wxSize tileSize() const;
+    ColorPair getColorPair(const wxColour& color) const;
     void drawTile(wxGraphicsContext* gc, int x, int y, int width,
                   int height, int edge, int edge2);
-    ColorPair getColorPair(const wxColour& color) const;
+    void drawSegments(wxGraphicsContext* gc, int edge,
+                      const ColorPair& colorPair, int x1, int y1, int x2,
+                      int y2);
+    void drawSegment(wxGraphicsContext* gc, int edge,
+                      const wxColour& color, const Coords& coords);
+    void drawFocus(wxGraphicsContext* gc, int x1, int y1, int edge,
+                   int width, int height);
 
     void onPaint(wxPaintEvent&);
     void onChar(wxKeyEvent&);

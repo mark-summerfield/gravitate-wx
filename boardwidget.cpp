@@ -157,31 +157,6 @@ void BoardWidget::onPaint(wxPaintEvent&) {
 }
 
 
-void BoardWidget::drawTile(wxGraphicsContext* gc, int x, int y, int width,
-                           int height, int edge, int edge2) {
-    const int x1 = x * width;
-    const int y1 = y * height;
-    const auto color = tiles[x][y];
-    if (color == EMPTY_COLOR) {
-        gc->SetBrush(wxBrush(BACKGROUND_COLOR));
-        gc->DrawRectangle(x1, y1, width, height);
-    }
-    else {
-        const int x2 = x1 + width;
-        const int y2 = y2 + height;
-        const auto colorPair = getColorPair(color);
-        //drawSegments(gc, edge, colorPair, x1, y1, x2, y2); // TODO
-        auto brush = gc->CreateLinearGradientBrush(
-            x1, y1, x2, y2, colorPair.light, colorPair.dark);
-        gc->SetBrush(brush);
-        gc->DrawRectangle(x1 + edge, y1 + edge, width - edge2,
-                          height - edge2);
-        if (selected == wxPoint(x, y))
-            ; // drawFocus(gc, x1, y1, edge, width, height); // TODO
-    }
-}
-
-
 ColorPair BoardWidget::getColorPair(const wxColour& color) const {
     ColorPair colorPair;
     if (dimming) {
@@ -200,4 +175,48 @@ ColorPair BoardWidget::getColorPair(const wxColour& color) const {
         }
     }
     return colorPair;
+}
+
+
+void BoardWidget::drawTile(wxGraphicsContext* gc, int x, int y, int width,
+                           int height, int edge, int edge2) {
+    const int x1 = x * width;
+    const int y1 = y * height;
+    const auto color = tiles[x][y];
+    if (color == EMPTY_COLOR) {
+        gc->SetBrush(wxBrush(BACKGROUND_COLOR));
+        gc->DrawRectangle(x1, y1, width, height);
+    }
+    else {
+        const int x2 = x1 + width;
+        const int y2 = y2 + height;
+        const auto colorPair = getColorPair(color);
+        drawSegments(gc, edge, colorPair, x1, y1, x2, y2);
+        auto brush = gc->CreateLinearGradientBrush(
+            x1, y1, x2, y2, colorPair.light, colorPair.dark);
+        gc->SetBrush(brush);
+        gc->DrawRectangle(x1 + edge, y1 + edge, width - edge2,
+                          height - edge2);
+        if (selected == wxPoint(x, y))
+            drawFocus(gc, x1, y1, edge, width, height);
+    }
+}
+
+
+void BoardWidget::drawSegments(wxGraphicsContext* gc, int edge,
+                               const ColorPair& colorPair, int x1, int y1,
+                               int x2, int y2) {
+std::cout << "drawSegments\n";
+}
+
+
+void BoardWidget::drawSegment(wxGraphicsContext* gc, int edge,
+                              const wxColour& color, const Coords& coords) {
+std::cout << "drawSegment\n";
+}
+
+
+void BoardWidget::drawFocus(wxGraphicsContext* gc, int x1, int y1, int edge,
+                            int width, int height) {
+std::cout << "drawFocus\n";
 }
