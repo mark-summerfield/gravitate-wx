@@ -63,10 +63,14 @@ private:
                      const Coords& coords);
     void drawFocus(wxGraphicsContext* gc, double x1, double y1, double edge,
                    double width, double height);
+    void deleteTile(int x, int y);
+    bool isLegal(int x, int y, const wxColour& color);
+    void dimAdjoining(int x, int y, const wxColour& color);
 
     void onPaint(wxPaintEvent&);
     void onChar(wxKeyEvent&);
     void onClick(wxMouseEvent&);
+    void onMoveKey(int code);
 
     wxSize DoGetBestClientSize() const wxOVERRIDE;
 
@@ -76,7 +80,9 @@ private:
     bool dimming;
     int columns;
     int rows;
+    int delayMs;
     int selectedX;
     int selectedY;
     TileGrid tiles;
+    wxTimer timer;
 };

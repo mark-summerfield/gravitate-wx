@@ -8,6 +8,7 @@
 #include <wx/utils.h>
 
 #include <algorithm>
+#include <cmath>
 #include <chrono>
 #include <memory>
 
@@ -17,12 +18,14 @@ wxDEFINE_EVENT(GAME_OVER_EVENT, wxCommandEvent);
 
 
 const auto BACKGROUND_COLOR = wxColour("#FFFEE0");
+const int INVALID_POS = -1;
 
 
 BoardWidget::BoardWidget(wxWindow* parent)
         : wxWindow(parent, wxID_ANY), score(0), gameOver(true),
           drawing(false), dimming(false), columns(COLUMNS_DEFAULT),
-          rows(ROWS_DEFAULT), selectedX(-1), selectedY(-1) {
+          rows(ROWS_DEFAULT), delayMs(DELAY_MS_DEFAULT),
+          selectedX(INVALID_POS), selectedY(INVALID_POS) {
     SetDoubleBuffered(true);
     Bind(wxEVT_LEFT_DOWN, &BoardWidget::onClick, this);
     Bind(wxEVT_CHAR_HOOK, &BoardWidget::onChar, this);
@@ -34,7 +37,7 @@ BoardWidget::BoardWidget(wxWindow* parent)
 void BoardWidget::newGame() {
     gameOver = false;
     score = 0;
-    selectedX = selectedY = -1;
+    selectedX = selectedY = INVALID_POS;
     const auto seed = std::chrono::system_clock::now().time_since_epoch()
         .count();
     Randomizer randomizer(seed);
@@ -44,6 +47,7 @@ void BoardWidget::newGame() {
     const auto colors = getColors(maxColors, randomizer);
     config->Read(COLUMNS, &columns, COLUMNS_DEFAULT);
     config->Read(ROWS, &rows, ROWS_DEFAULT);
+    config->Read(DELAY_MS, &delayMs, DELAY_MS_DEFAULT);
     std::uniform_int_distribution<int> distribution(0, maxColors - 1);
     tiles.clear();
     for (int x = 0; x < columns; ++x) {
@@ -117,14 +121,63 @@ TileSize BoardWidget::tileSize() const {
 }
 
 
-void BoardWidget::onClick(wxMouseEvent&) {
-    std::cout << "onClick" << std::endl;
+void BoardWidget::onChar(wxKeyEvent& event) {
+    if (gameOver || drawing) {
+        event.Skip();
+        return;
+    }
+    auto key = event.GetKeyCode();
+    if (key == WXK_LEFT || key == WXK_RIGHT || key == WXK_UP ||
+            key == WXK_DOWN)
+        onMoveKey(key);
+    else if (key == WXK_SPACE) {
+        if (selectedX != INVALID_POS && selectedY != INVALID_POS)
+            deleteTile(selectedX, selectedY);
+    }
+    else
+        event.Skip();
 }
 
 
-void BoardWidget::onChar(wxKeyEvent& event) {
-    std::cout << "onChar" << std::endl;
-    event.Skip();
+void BoardWidget::onMoveKey(int code) {
+    if (selectedX == INVALID_POS || selectedY == INVALID_POS) {
+        selectedX = columns / 2;
+        selectedY = rows / 2;
+    }
+    else {
+        int x = selectedX;
+        int y = selectedY;
+        if (code == WXK_LEFT)
+            --x;
+        else if (code == WXK_RIGHT)
+            ++x;
+        else if (code == WXK_UP)
+            --y;
+        else if (code == WXK_DOWN)
+            ++y;
+        if (0 <= x && x < columns && 0 <= y && y < rows &&
+                tiles[x][y] != wxNullColour) {
+            selectedX = x;
+            selectedY = y;
+        }
+    }
+    draw();
+}
+
+
+void BoardWidget::onClick(wxMouseEvent& event) {
+    if (gameOver || drawing) {
+        event.Skip();
+        return;
+    }
+    const auto size = tileSize();
+    const int x = static_cast<int>(event.GetX() / round(size.width));
+    const int y = static_cast<int>(event.GetY() / round(size.height));
+    if (selectedX != INVALID_POS || selectedY != INVALID_POS) {
+        selectedX = selectedY = INVALID_POS;
+        draw();
+    }
+    deleteTile(x, y);
 }
 
 
@@ -235,4 +288,34 @@ void BoardWidget::drawFocus(wxGraphicsContext* gc, double x1, double y1,
     gc->SetPen(wxPen(*wxBLACK, 1, wxPENSTYLE_DOT));
     gc->DrawRectangle(x1 + edge, y1 + edge, width - edge2, height - edge2);
     gc->SetPen(wxPen());
+}
+
+
+void BoardWidget::deleteTile(int x, int y) {
+    auto color = tiles[x][y];
+    if (color == wxNullColour || !isLegal(x, y, color))
+        return;
+    dimming = true;
+    dimAdjoining(x, y, color);
+    dimming = false;
+}
+
+
+bool BoardWidget::isLegal(int x, int y, const wxColour& color) {
+    // A legal click is on a colored tile that is adjacent to another
+    // tile of the same color.
+    if (x > 0 && tiles[x - 1][y] == color)
+        return true;
+    if (x + 1 < columns && tiles[x + 1][y] == color)
+        return true;
+    if (y > 0 && tiles[x][y - 1] == color)
+        return true;
+    if (y + 1 < rows && tiles[x][y + 1] == color)
+        return true;
+    return false;
+}
+
+
+void BoardWidget::dimAdjoining(int x, int y, const wxColour& color) {
+    std::cout << "dimAdjoining (" << x << "," << y << ")" << std::endl;
 }
