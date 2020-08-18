@@ -12,6 +12,8 @@ optionswindow.hpp
 optionswindow.cpp
 boardwidget.hpp # TODO 
 boardwidget.cpp # TODO ...
+svgartprovider.hpp
+svgartprovider.cpp
 constants.hpp
 
 SConstruct

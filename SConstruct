@@ -5,6 +5,7 @@ import pathlib
 import subprocess
 import sys
 
+
 WIN = sys.platform.startswith('win')
 
 appname = 'Gravitate'

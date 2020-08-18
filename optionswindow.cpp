@@ -7,6 +7,7 @@
 
 #include "images/gravitate32.xpm"
 
+// #include <wx/artprov.h> // TODO delete
 #include <wx/config.h>
 #include <wx/gbsizer.h>
 
@@ -60,11 +61,15 @@ void OptionsWindow::makeWidgets() {
         "How long to show tile movement in milliseconds (1/1000ths second) "
         "[default %d]", DELAY_MS_DEFAULT));
     okButton = new wxButton(panel, wxID_OK, L"✔ &OK");
+    // okButton = new wxButton(panel, wxID_OK, "&OK"); // TODO delete
+    // okButton->SetBitmap(wxArtProvider::GetBitmap(wxART_TICK_MARK));
     okButton->SetDefault();
     okButton->SetToolTip("Confirm option choices: these will take effect "
                          "when you click New for a new game");
     padLabel = new wxStaticText(panel, wxID_ANY, " ");
     cancelButton = new wxButton(panel, wxID_CANCEL, L"✘ &Cancel");
+    // cancelButton = new wxButton(panel, wxID_CANCEL, "&Cancel"); // TODO delete
+    // cancelButton->SetBitmap(wxArtProvider::GetBitmap(wxART_ERROR));
     cancelButton->SetToolTip("Leave the option choices unchanged");
 }
 

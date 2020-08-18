@@ -17,7 +17,6 @@ wxDEFINE_EVENT(GAME_OVER_EVENT, wxCommandEvent);
 
 
 const auto BACKGROUND_COLOR = wxColour("#FFFEE0");
-const auto EMPTY_COLOR = wxColour("#010101");
 
 
 BoardWidget::BoardWidget(wxWindow* parent)
@@ -182,7 +181,7 @@ void BoardWidget::drawTile(wxGraphicsContext* gc, int x, int y,
     const double x1 = x * width;
     const double y1 = y * height;
     const auto color = tiles[x][y];
-    if (color == EMPTY_COLOR) {
+    if (color == wxNullColour) {
         gc->SetBrush(wxBrush(BACKGROUND_COLOR));
         gc->DrawRectangle(x1, y1, width, height);
     }

@@ -11,6 +11,7 @@
 #include "images/options32.xpm"
 #include "images/quit32.xpm"
 
+#include <wx/artprov.h>
 #include <wx/config.h>
 
 #include <memory>
@@ -53,8 +54,13 @@ void MainWindow::makeWidgets() {
 
 
 void MainWindow::makeToolBar() {
+    wxSize size(FromDIP(wxSize(32, 32)));
     auto toolbar = CreateToolBar();
-    toolbar->AddTool(wxID_NEW, "New", new32_xpm, "New game (n)");
+    //toolbar->AddTool(wxID_NEW, "New", new32_xpm, "New game (n)");
+    toolbar->AddTool(
+        wxID_NEW, "New",
+        wxArtProvider::GetBitmap(wxART_NEW, wxART_TOOLBAR, size),
+        "New game (n)");
     toolbar->AddSeparator();
     toolbar->AddTool(wxID_PREFERENCES, "Options", options32_xpm,
                      "View or change options (o)");

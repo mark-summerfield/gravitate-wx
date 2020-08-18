@@ -3,6 +3,7 @@
 
 #include "application.hpp"
 #include "mainwindow.hpp"
+#include "svgartprovider.hpp"
 
 
 wxIMPLEMENT_APP(Application);
@@ -11,6 +12,7 @@ wxIMPLEMENT_APP(Application);
 bool Application::OnInit() {
     SetAppName("Gravitate");
     SetVendorName("qtrac.eu");
+    wxArtProvider::Push(new SvgArtProvider);
     MainWindow *window = new MainWindow();
     window->Show(true);
     return true;
