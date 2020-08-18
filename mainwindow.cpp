@@ -2,14 +2,8 @@
 // License: GPLv3
 
 #include "actions.hpp"
+#include "constants.hpp"
 #include "mainwindow.hpp"
-
-#include "images/about32.xpm"
-#include "images/gravitate32.xpm"
-#include "images/help32.xpm"
-#include "images/new32.xpm"
-#include "images/options32.xpm"
-#include "images/quit32.xpm"
 
 #include <wx/artprov.h>
 #include <wx/config.h>
@@ -23,7 +17,7 @@ MainWindow::MainWindow()
           starting(true) {
     SetMinSize(wxSize(240, 300));
     SetTitle(wxTheApp->GetAppName());
-    SetIcon(gravitate32_xpm);
+    SetIcon(wxArtProvider::GetIcon(ICON_ID));
     makeWidgets();
     makeLayout();
     makeBindings();
@@ -56,24 +50,34 @@ void MainWindow::makeWidgets() {
 void MainWindow::makeToolBar() {
     wxSize size(FromDIP(wxSize(32, 32)));
     auto toolbar = CreateToolBar();
-    //toolbar->AddTool(wxID_NEW, "New", new32_xpm, "New game (n)");
     toolbar->AddTool(
         wxID_NEW, "New",
         wxArtProvider::GetBitmap(wxART_NEW, wxART_TOOLBAR, size),
         "New game (n)");
     toolbar->AddSeparator();
-    toolbar->AddTool(wxID_PREFERENCES, "Options", options32_xpm,
-                     "View or change options (o)");
+    toolbar->AddTool(
+        wxID_PREFERENCES, "Options",
+        wxArtProvider::GetBitmap(OPTIONS_ID, wxART_TOOLBAR, size),
+        "View or change options (o)");
     toolbar->AddSeparator();
     toolbar->AddStretchableSpace();
     toolbar->AddSeparator();
-    toolbar->AddTool(wxID_ABOUT, "About", about32_xpm, "About (a)");
+    toolbar->AddTool(
+        wxID_ABOUT, "About",
+        wxArtProvider::GetBitmap(wxART_INFORMATION, wxART_TOOLBAR, size),
+        "About (a)");
     toolbar->AddSeparator();
-    toolbar->AddTool(wxID_HELP, "Help", help32_xpm, "How to play (F1)");
+    toolbar->AddTool(
+        wxID_HELP, "Help",
+        wxArtProvider::GetBitmap(wxART_HELP, wxART_TOOLBAR, size),
+        "How to play (F1)");
     toolbar->AddSeparator();
     toolbar->AddStretchableSpace();
     toolbar->AddSeparator();
-    toolbar->AddTool(wxID_EXIT, "Quit", quit32_xpm, "Quit the game (q)");
+    toolbar->AddTool(
+        wxID_EXIT, "Quit",
+        wxArtProvider::GetBitmap(wxART_QUIT, wxART_TOOLBAR, size),
+        "Quit the game (q)");
     toolbar->Realize();
 }
 

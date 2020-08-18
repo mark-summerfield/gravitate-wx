@@ -68,7 +68,7 @@ private:
     void onChar(wxKeyEvent&);
     void onClick(wxMouseEvent&);
 
-    wxSize DoGetBestClientSize() const;
+    wxSize DoGetBestClientSize() const wxOVERRIDE;
 
     int score;
     bool gameOver;

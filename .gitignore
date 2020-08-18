@@ -41,5 +41,6 @@ GPLv3.txt
 .dub/
 dub.selections.json
 .sconsign.dblite
+*.xpm
 Gravitate
 Gravitate.exe

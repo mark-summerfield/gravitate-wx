@@ -33,5 +33,8 @@ const int COORDS_LEN = 4;
 const auto FRAME_STYLE = wxDEFAULT_FRAME_STYLE | wxDEFAULT_DIALOG_STYLE |
                          wxRESIZE_BORDER;
 
+const wxString ICON_ID("ICON");
+const wxString OPTIONS_ID("OPTIONS");
+
 const wxString LOST("LOST");
 const wxString WON("WON");

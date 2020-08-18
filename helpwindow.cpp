@@ -3,9 +3,9 @@
 
 #include "constants.hpp"
 #include "helpwindow.hpp"
+#include "util.hpp"
 
-#include "images/gravitate32.xpm"
-
+#include <wx/artprov.h>
 #include <wx/html/htmlwin.h>
 
 
@@ -50,13 +50,14 @@ HelpWindow::HelpWindow(wxWindow* parent)
         : wxDialog(parent, wxID_ANY,
                    wxString::Format(L"Help — %s", wxTheApp->GetAppName()),
                    wxDefaultPosition, wxSize(400, 500), FRAME_STYLE) {
-    SetIcon(gravitate32_xpm);
+    SetIcon(wxArtProvider::GetIcon(ICON_ID));
     SetMinSize(wxSize(200, 200));
     auto htmlLabel = new wxHtmlWindow(this);
     auto background = wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE);
     htmlLabel->SetPage(wxString::Format(HTML_TEXT,
                        background.GetAsString(wxC2S_HTML_SYNTAX)));
-    auto okButton = new wxButton(this, wxID_OK);
+    auto okButton = createStandardButton(this, wxID_OK);
+    okButton->SetDefault();
     auto sizer = new wxBoxSizer(wxVERTICAL);
     sizer->Add(htmlLabel, 1, wxALL | wxEXPAND, 3);
     sizer->Add(okButton, 0, wxALL | wxALIGN_CENTER, 3);

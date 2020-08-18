@@ -3,9 +3,9 @@
 
 #include "aboutwindow.hpp"
 #include "constants.hpp"
+#include "util.hpp"
 
-#include "images/gravitate32.xpm"
-
+#include <wx/artprov.h>
 #include <wx/datetime.h>
 #include <wx/platinfo.h>
 
@@ -50,10 +50,11 @@ AboutWindow::AboutWindow(wxWindow* parent)
         : wxDialog(parent, wxID_ANY,
                    wxString::Format(L"About — %s", wxTheApp->GetAppName()),
                    wxDefaultPosition, wxSize(450, 550), FRAME_STYLE) {
-    SetIcon(gravitate32_xpm);
+    SetIcon(wxArtProvider::GetIcon(ICON_ID));
     SetMinSize(wxSize(200, 200));
-    auto iconBitmap = new wxStaticBitmap(this, wxID_ANY,
-                                         wxBitmap(gravitate32_xpm));
+    auto iconBitmap = new wxStaticBitmap(
+        this, wxID_ANY, wxArtProvider::GetBitmap(ICON_ID, wxART_OTHER,
+                                                 FromDIP(wxSize(48, 48))));
     auto htmlLabel = new wxHtmlWindow(this);
     const int year = wxDateTime::GetCurrentYear();
     auto platform = wxPlatformInfo::Get();
@@ -63,7 +64,8 @@ AboutWindow::AboutWindow(wxWindow* parent)
         __VERSION__, wxVERSION_STRING,
         platform.GetOperatingSystemDescription(),
         year == 2020 ? "2020" : wxString::Format("2020-%d", year)));
-    auto okButton = new wxButton(this, wxID_OK);
+    auto okButton = createStandardButton(this, wxID_OK);
+    okButton->SetDefault();
     auto sizer = new wxBoxSizer(wxVERTICAL);
     sizer->Add(iconBitmap, 0, wxALL | wxALIGN_CENTER, 3);
     sizer->Add(htmlLabel, 1, wxALL | wxEXPAND, 3);
