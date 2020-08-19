@@ -225,23 +225,16 @@ ColorPair BoardWidget::getColorPair(const wxColour& color) const {
     const auto hexColor = color.GetAsString(wxC2S_HTML_SYNTAX);
     ColorPair colorPair;
     if (dimming) {
-        // TODO dim
         colorPair.light = color;
-        colorPair.dark = wxColour(nameMap[std::string(hexColor)]);
+        colorPair.dark = color.ChangeLightness(60);
     }
     else if (gameOver) {
-        // TODO grey out
-        colorPair.light = wxColour(nameMap[std::string(hexColor)]);
-        colorPair.dark = wxColour(nameMap[std::string(hexColor)]);
+        colorPair.light = wxColour(nameMap[std::string(hexColor)])
+            .ChangeLightness(85);
+        colorPair.dark = color.ChangeLightness(85);
     }
     else {
         colorPair.light = wxColour(nameMap[std::string(hexColor)]);
-if (!colorPair.light.IsOk()) {
-    std::cout << "light = " << color.GetAsString(wxC2S_HTML_SYNTAX) <<
-        "\n";
-    std::cout << "alpha = " << int(color.Alpha()) << " dimming=" <<
-        dimming << " hexColor=" << hexColor << "\n";
-}
         colorPair.dark = color;
     }
     return colorPair;
