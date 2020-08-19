@@ -71,7 +71,7 @@ public:
 private:
     void announceScore();
     void announceGameOver(const wxString&);
-    ColorVector getColors(int maxColors, Randomizer&);
+    ColorVector getColors(Randomizer&);
     void draw(int delayMs=0, bool force=false);
     TileSize tileSize() const;
     ColorPair getColorPair(const wxColour& color) const;
@@ -102,6 +102,7 @@ private:
     bool drawing;
     int columns;
     int rows;
+    int maxColors;
     int delayMs;
     int selectedX;
     int selectedY;

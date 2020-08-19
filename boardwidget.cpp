@@ -8,8 +8,8 @@
 #include <wx/utils.h>
 
 #include <algorithm>
-#include <cmath>
 #include <chrono>
+#include <cmath>
 #include <functional>
 #include <memory>
 
@@ -37,8 +37,8 @@ namespace std {
 BoardWidget::BoardWidget(wxWindow* parent)
         : wxWindow(parent, wxID_ANY), score(0), gameOver(true),
           drawing(false), columns(COLUMNS_DEFAULT), rows(ROWS_DEFAULT),
-          delayMs(DELAY_MS_DEFAULT), selectedX(INVALID_POS),
-          selectedY(INVALID_POS) {
+          maxColors(MAX_COLORS_DEFAULT), delayMs(DELAY_MS_DEFAULT),
+          selectedX(INVALID_POS), selectedY(INVALID_POS) {
     SetDoubleBuffered(true);
     Bind(wxEVT_LEFT_DOWN, &BoardWidget::onClick, this);
     Bind(wxEVT_CHAR_HOOK, &BoardWidget::onChar, this);
@@ -55,9 +55,8 @@ void BoardWidget::newGame() {
         .count();
     Randomizer randomizer(seed);
     std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
-    int maxColors;
     config->Read(MAX_COLORS, &maxColors, MAX_COLORS_DEFAULT);
-    const auto colors = getColors(maxColors, randomizer);
+    const auto colors = getColors(randomizer);
     config->Read(COLUMNS, &columns, COLUMNS_DEFAULT);
     config->Read(ROWS, &rows, ROWS_DEFAULT);
     config->Read(DELAY_MS, &delayMs, DELAY_MS_DEFAULT);
@@ -73,7 +72,7 @@ void BoardWidget::newGame() {
 }
 
 
-ColorVector BoardWidget::getColors(int maxColors, Randomizer &randomizer) {
+ColorVector BoardWidget::getColors(Randomizer &randomizer) {
     auto colors = colorMap();
     ColorVector result;
     for (auto it = colors.cbegin(); it != colors.cend(); ++it)
