@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cmath>
 #include <chrono>
+#include <functional>
 #include <memory>
 
 
@@ -18,7 +19,19 @@ wxDEFINE_EVENT(GAME_OVER_EVENT, wxCommandEvent);
 
 
 const auto BACKGROUND_COLOR = wxColour("#FFFEE0");
-const int INVALID_POS = -1;
+
+
+bool operator==(const TilePos& a, const TilePos& b) {
+    return a.x == b.x && a.y == b.y;
+}
+
+namespace std {
+    template<> struct hash<TilePos> {
+        size_t operator()(const TilePos& xy) const noexcept {
+            return std::hash<int>{}(xy.x) ^ (std::hash<int>{}(xy.y) << 1);
+        }
+    };
+}
 
 
 BoardWidget::BoardWidget(wxWindow* parent)
@@ -208,21 +221,28 @@ void BoardWidget::onPaint(wxPaintEvent&) {
 
 
 ColorPair BoardWidget::getColorPair(const wxColour& color) const {
+    auto nameMap = colorNameMap();
+    const auto hexColor = color.GetAsString(wxC2S_HTML_SYNTAX);
     ColorPair colorPair;
     if (dimming) {
+        // TODO dim
         colorPair.light = color;
-        colorPair.dark = color.ChangeLightness(60);
+        colorPair.dark = wxColour(nameMap[std::string(hexColor)]);
+    }
+    else if (gameOver) {
+        // TODO grey out
+        colorPair.light = wxColour(nameMap[std::string(hexColor)]);
+        colorPair.dark = wxColour(nameMap[std::string(hexColor)]);
     }
     else {
-        const auto hexColor = color.GetAsString(wxC2S_HTML_SYNTAX);
-        auto nameMap = colorNameMap();
-        const auto lightColor = nameMap[std::string(hexColor)];
-        colorPair.light = wxColour(lightColor);
+        colorPair.light = wxColour(nameMap[std::string(hexColor)]);
+if (!colorPair.light.IsOk()) {
+    std::cout << "light = " << color.GetAsString(wxC2S_HTML_SYNTAX) <<
+        "\n";
+    std::cout << "alpha = " << int(color.Alpha()) << " dimming=" <<
+        dimming << " hexColor=" << hexColor << "\n";
+}
         colorPair.dark = color;
-        if (gameOver) {
-            colorPair.light = colorPair.light.ChangeLightness(85);
-            colorPair.dark = colorPair.dark.ChangeLightness(85);
-        }
     }
     return colorPair;
 }
@@ -317,5 +337,37 @@ bool BoardWidget::isLegal(int x, int y, const wxColour& color) {
 
 
 void BoardWidget::dimAdjoining(int x, int y, const wxColour& color) {
-    std::cout << "dimAdjoining (" << x << "," << y << ")" << std::endl;
+    Adjoining adjoining;
+    populateAdjoining(x, y, color, adjoining);
+    auto nameMap = colorNameMap();
+    for (auto it = adjoining.cbegin(); it != adjoining.cend(); ++it) {
+        const int x = (*it).x;
+        const int y = (*it).y;
+        const auto hexColor = tiles[x][y].GetAsString(wxC2S_HTML_SYNTAX);
+        // TODO dim
+        tiles[x][y] = wxColour(nameMap[std::string(hexColor)]);
+    }
+    draw(5);
 }
+
+
+void BoardWidget::populateAdjoining(int x, int y, const wxColour& color,
+                                    Adjoining& adjoining) {
+    if (x < 0 || x >= columns || y < 0 || y >= rows)
+        return; // Fallen off an edge
+    if (tiles[x][y] != color)
+        return; // Color doesn't match
+    const auto tilePos = TilePos(x, y);
+    auto it = adjoining.find(tilePos);
+    if (it != adjoining.end())
+        return; // Already done (C++20 supports .contains())
+    adjoining.insert(tilePos);
+    populateAdjoining(x - 1, y, color, adjoining);
+    populateAdjoining(x + 1, y, color, adjoining);
+    populateAdjoining(x, y - 1, color, adjoining);
+    populateAdjoining(x, y + 1, color, adjoining);
+}
+
+// do score in closeTilesUp() (count is adjoining.size())
+//  score += static_cast<int>(round(sqrt(static_cast<double>(columns) * rows)) +
+//                  pow(count, maxColors / 2));

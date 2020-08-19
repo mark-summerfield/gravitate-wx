@@ -12,6 +12,7 @@
 
 #include <random>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 
@@ -25,6 +26,19 @@ using Coords = double[COORDS_LEN][2];
 
 wxDECLARE_EVENT(SCORE_EVENT, wxCommandEvent);
 wxDECLARE_EVENT(GAME_OVER_EVENT, wxCommandEvent);
+
+
+const int INVALID_POS = -1;
+
+
+struct TilePos {
+    TilePos(int x_=INVALID_POS, int y_=INVALID_POS) : x(x_), y(y_) {}
+
+    int x;
+    int y;
+};
+
+using Adjoining = std::unordered_set<TilePos>;
 
 
 struct TileSize {
@@ -66,6 +80,8 @@ private:
     void deleteTile(int x, int y);
     bool isLegal(int x, int y, const wxColour& color);
     void dimAdjoining(int x, int y, const wxColour& color);
+    void populateAdjoining(int x, int y, const wxColour& color,
+                           Adjoining& adjoining);
 
     void onPaint(wxPaintEvent&);
     void onChar(wxKeyEvent&);
