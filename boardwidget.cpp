@@ -18,7 +18,7 @@ wxDEFINE_EVENT(SCORE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(GAME_OVER_EVENT, wxCommandEvent);
 
 
-const auto BACKGROUND_COLOR = wxColour("#FFFEE0");
+const auto BACKGROUND_COLOR = wxColour(0xFFFFFEE0);
 
 
 bool operator==(const TilePos& a, const TilePos& b) {
@@ -36,9 +36,9 @@ namespace std {
 
 BoardWidget::BoardWidget(wxWindow* parent)
         : wxWindow(parent, wxID_ANY), score(0), gameOver(true),
-          drawing(false), dimming(false), columns(COLUMNS_DEFAULT),
-          rows(ROWS_DEFAULT), delayMs(DELAY_MS_DEFAULT),
-          selectedX(INVALID_POS), selectedY(INVALID_POS) {
+          drawing(false), columns(COLUMNS_DEFAULT), rows(ROWS_DEFAULT),
+          delayMs(DELAY_MS_DEFAULT), selectedX(INVALID_POS),
+          selectedY(INVALID_POS) {
     SetDoubleBuffered(true);
     Bind(wxEVT_LEFT_DOWN, &BoardWidget::onClick, this);
     Bind(wxEVT_CHAR_HOOK, &BoardWidget::onChar, this);
@@ -74,27 +74,28 @@ void BoardWidget::newGame() {
 
 
 ColorVector BoardWidget::getColors(int maxColors, Randomizer &randomizer) {
-    auto colourMap = colorNameMap();
-    ColorVector colors;
-    for (auto it = colourMap.cbegin(); it != colourMap.cend(); ++it)
-        colors.push_back(wxColour(it->first));
-    std::shuffle(colors.begin(), colors.end(), randomizer);
-    colors.resize(maxColors);
-    return colors;
+    auto colors = colorMap();
+    ColorVector result;
+    for (auto it = colors.cbegin(); it != colors.cend(); ++it)
+        result.push_back(wxColour(it->first));
+    std::shuffle(result.begin(), result.end(), randomizer);
+    result.resize(maxColors);
+    return result;
 }
 
 
-const ColorNameMap& BoardWidget::colorNameMap() {
-    static ColorNameMap colors;
+const ColorMap& BoardWidget::colorMap() {
+    static ColorMap colors;
     if (colors.empty())
-        colors = { // key=dark, value=light
-            {"#000080", "#9999F9"},
-            {"#008000", "#99F999"},
-            {"#008080", "#99F9F9"},
-            {"#800000", "#F99999"},
-            {"#800080", "#F999F9"},
-            {"#808000", "#F9F999"},
-            {"#808080", "#F9F9F9"},
+        colors = { // key=dark, value={light, dim, over}
+            {{0xFF800000}, {0xFFF99999, 0xFFCE0000, 0xFF6C0000}},
+            {{0xFF800000}, {0xFFF99999, 0xFFCE0000, 0xFF6C0000}},
+            {{0xFF008000}, {0xFF99F999, 0xFF00CE00, 0xFF006C00}},
+            {{0xFF808000}, {0xFFF9F999, 0xFFCECE00, 0xFF6C6C00}},
+            {{0xFF000080}, {0xFF9999F9, 0xFF0000CE, 0xFF00006C}},
+            {{0xFF800080}, {0xFFF999F9, 0xFFCE00CE, 0xFF6C006C}},
+            {{0xFF008080}, {0xFF99F9F9, 0xFF00CECE, 0xFF006C6C}},
+            {{0xFF808080}, {0xFFF9F9F9, 0xFFCECECE, 0xFF6C6C6C}},
         };
     return colors;
 }
@@ -221,20 +222,15 @@ void BoardWidget::onPaint(wxPaintEvent&) {
 
 
 ColorPair BoardWidget::getColorPair(const wxColour& color) const {
-    auto nameMap = colorNameMap();
-    const auto hexColor = color.GetAsString(wxC2S_HTML_SYNTAX);
+    auto colors = colorMap();
+    const auto& threeColors = colors[color.GetRGBA()];
     ColorPair colorPair;
-    if (dimming) {
-        colorPair.light = color;
-        colorPair.dark = color.ChangeLightness(60);
-    }
-    else if (gameOver) {
-        colorPair.light = wxColour(nameMap[std::string(hexColor)])
-            .ChangeLightness(85);
-        colorPair.dark = color.ChangeLightness(85);
+    if (gameOver) {
+        colorPair.light = wxColour(threeColors.over);
+        colorPair.dark = wxColour(threeColors.dim);
     }
     else {
-        colorPair.light = wxColour(nameMap[std::string(hexColor)]);
+        colorPair.light = wxColour(threeColors.light);
         colorPair.dark = color;
     }
     return colorPair;
@@ -308,9 +304,7 @@ void BoardWidget::deleteTile(int x, int y) {
     auto color = tiles[x][y];
     if (color == wxNullColour || !isLegal(x, y, color))
         return;
-    dimming = true;
     dimAdjoining(x, y, color);
-    dimming = false;
 }
 
 
@@ -332,15 +326,15 @@ bool BoardWidget::isLegal(int x, int y, const wxColour& color) {
 void BoardWidget::dimAdjoining(int x, int y, const wxColour& color) {
     Adjoining adjoining;
     populateAdjoining(x, y, color, adjoining);
-    auto nameMap = colorNameMap();
+    auto colors = colorMap();
     for (auto it = adjoining.cbegin(); it != adjoining.cend(); ++it) {
         const int x = (*it).x;
         const int y = (*it).y;
-        const auto hexColor = tiles[x][y].GetAsString(wxC2S_HTML_SYNTAX);
-        // TODO dim
-        tiles[x][y] = wxColour(nameMap[std::string(hexColor)]);
+        const auto key = tiles[x][y].GetRGBA();
+        tiles[x][y] = wxColour(colors[key].dim);
     }
     draw(5);
+    // TODO
 }
 
 

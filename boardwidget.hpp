@@ -16,7 +16,14 @@
 #include <vector>
 
 
-using ColorNameMap = std::unordered_map<std::string, std::string>;
+struct ThreeColors {
+    wxUint32 light;
+    wxUint32 dim;
+    wxUint32 over;
+};
+
+
+using ColorMap = std::unordered_map<wxUint32, ThreeColors>;
 using ColorVector = std::vector<wxColour>;
 using TileRow = std::vector<wxColour>;
 using TileGrid = std::vector<TileRow>;
@@ -55,7 +62,7 @@ struct ColorPair {
 
 class BoardWidget : public wxWindow {
 public:
-    static const ColorNameMap& colorNameMap();
+    static const ColorMap& colorMap();
 
     explicit BoardWidget(wxWindow* parent);
 
@@ -93,7 +100,6 @@ private:
     int score;
     bool gameOver;
     bool drawing;
-    bool dimming;
     int columns;
     int rows;
     int delayMs;
