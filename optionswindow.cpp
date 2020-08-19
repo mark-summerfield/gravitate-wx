@@ -2,9 +2,9 @@
 // License: GPLv3
 
 #include "boardwidget.hpp"
+#include "buttonwidget.hpp"
 #include "constants.hpp"
 #include "optionswindow.hpp"
-#include "util.hpp"
 
 #include <wx/artprov.h>
 #include <wx/config.h>
@@ -59,12 +59,12 @@ void OptionsWindow::makeWidgets() {
     delayMsSpinCtrl->SetToolTip(wxString::Format(
         "How long to show tile movement in milliseconds (1/1000ths second) "
         "[default %d]", DELAY_MS_DEFAULT));
-    okButton = createStandardButton(panel, wxID_OK);
+    okButton = Button::createStandard(panel, wxID_OK);
     okButton->SetDefault();
     okButton->SetToolTip("Confirm option choices: these will take effect "
                          "when you click New for a new game");
     padLabel = new wxStaticText(panel, wxID_ANY, " ");
-    cancelButton = createStandardButton(panel, wxID_CANCEL);
+    cancelButton = Button::createStandard(panel, wxID_CANCEL);
     cancelButton->SetToolTip("Leave the option choices unchanged");
 }
 

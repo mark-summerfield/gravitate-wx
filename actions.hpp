@@ -5,10 +5,6 @@
 #include "mainwindow.hpp"
 
 
-namespace Actions {
-
 void onAbout(MainWindow* parent);
 void onOptions(MainWindow* parent);
 void onHelp(MainWindow* parent);
-
-}

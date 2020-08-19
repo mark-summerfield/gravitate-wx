@@ -2,8 +2,8 @@
 // License: GPLv3
 
 #include "aboutwindow.hpp"
+#include "buttonwidget.hpp"
 #include "constants.hpp"
-#include "util.hpp"
 
 #include <wx/artprov.h>
 #include <wx/datetime.h>
@@ -64,7 +64,7 @@ AboutWindow::AboutWindow(wxWindow* parent)
         __VERSION__, wxVERSION_STRING,
         platform.GetOperatingSystemDescription(),
         year == 2020 ? "2020" : wxString::Format("2020-%d", year)));
-    auto okButton = createStandardButton(this, wxID_OK);
+    auto okButton = Button::createStandard(this, wxID_OK);
     okButton->SetDefault();
     auto sizer = new wxBoxSizer(wxVERTICAL);
     sizer->Add(iconBitmap, 0, wxALL | wxALIGN_CENTER, 3);

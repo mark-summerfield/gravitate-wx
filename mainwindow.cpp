@@ -103,12 +103,10 @@ void MainWindow::makeLayout() {
 void MainWindow::makeBindings() {
     Bind(wxEVT_CHAR_HOOK, &MainWindow::onChar, this);
     Bind(wxEVT_TOOL, &MainWindow::onNew, this, wxID_NEW);
-    Bind(wxEVT_TOOL, [&](wxCommandEvent&) { Actions::onOptions(this); },
+    Bind(wxEVT_TOOL, [&](wxCommandEvent&) { onOptions(this); },
          wxID_PREFERENCES);
-    Bind(wxEVT_TOOL, [&](wxCommandEvent&) { Actions::onAbout(this); },
-         wxID_ABOUT);
-    Bind(wxEVT_TOOL, [&](wxCommandEvent&) { Actions::onHelp(this); },
-         wxID_HELP);
+    Bind(wxEVT_TOOL, [&](wxCommandEvent&) { onAbout(this); }, wxID_ABOUT);
+    Bind(wxEVT_TOOL, [&](wxCommandEvent&) { onHelp(this); }, wxID_HELP);
     Bind(wxEVT_TOOL, [&](wxCommandEvent&) { Close(true); }, wxID_EXIT);
     Bind(wxEVT_CLOSE_WINDOW, &MainWindow::onClose, this);
     Bind(SCORE_EVENT, [&](wxCommandEvent& event) {
@@ -144,13 +142,13 @@ void MainWindow::showScores(int score) {
 
 void MainWindow::onChar(wxKeyEvent& event) {
     if (event.GetKeyCode() == WXK_F1)
-        Actions::onHelp(this);
+        onHelp(this);
     else
         switch (event.GetUnicodeKey()) {
-            case 'A': Actions::onAbout(this); break;
-            case 'H': Actions::onHelp(this); break;
+            case 'A': onAbout(this); break;
+            case 'H': onHelp(this); break;
             case 'N': { wxCommandEvent event; onNew(event); break; }
-            case 'O': Actions::onOptions(this); break;
+            case 'O': onOptions(this); break;
             case 'Q': Close(true); break;
             default: event.Skip();
         }

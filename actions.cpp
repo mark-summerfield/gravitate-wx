@@ -8,8 +8,6 @@
 #include "actions.hpp"
 
 
-namespace Actions {
-
 void onAbout(MainWindow* parent) {
     AboutWindow aboutWindow(parent);
     aboutWindow.ShowModal();
@@ -29,7 +27,4 @@ void onOptions(MainWindow *parent) {
 void onHelp(MainWindow *parent) {
     HelpWindow helpWindow(parent);
     helpWindow.ShowModal();
-}
-
-
 }
