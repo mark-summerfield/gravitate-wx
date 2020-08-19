@@ -16,8 +16,6 @@ svgartprovider.hpp
 svgartprovider.cpp
 buttonwidget.hpp
 buttonwidget.cpp
-util.hpp
-util.cpp
 constants.hpp
 
 SConstruct
