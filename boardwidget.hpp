@@ -69,6 +69,9 @@ private:
     void moveTiles();
     bool moveIsPossible(int x, int y, PointMap& moves);
     PointSet getEmptyNeighbours(int x, int y);
+    Point nearestToMiddle(int x, int y, const PointSet& empties,
+                          bool* move);
+    bool isSquare(const Point& point);
     void checkGameOver();
     Ripple rippledRange(int limit);
 

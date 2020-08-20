@@ -33,6 +33,8 @@ struct Point {
 
     int x;
     int y;
+
+    bool isValid() const { return x != INVALID_POS && y != INVALID_POS; }
 };
 
 
@@ -413,8 +415,8 @@ void BoardWidget::closeTilesUp(size_t count) {
 
 
 void BoardWidget::moveTiles() {
-    bool moved = true;
     PointMap moves;
+    bool moved = true;
     while (moved) {
         moved = false;
         for (int x: rippledRange(columns))
@@ -430,11 +432,26 @@ void BoardWidget::moveTiles() {
 
 
 bool BoardWidget::moveIsPossible(int x, int y, PointMap& moves) {
-std::cerr << "moveIsPossible\n";
     const auto empties = getEmptyNeighbours(x, y);
     if (!empties.empty()) {
+        bool move;
+        const auto midPoint = nearestToMiddle(x, y, empties, &move);
+        auto it = moves.find(midPoint);
+        if (it == moves.end())
+            return false; // avoid endless loop
+        const auto newPoint = it->second;
+        const auto oldPoint = Point(x, y);
+        if (newPoint == oldPoint)
+            return false; // avoid endless loop
+        if (move) {
+            tiles[newPoint.x][newPoint.y] = tiles[x][y];
+            tiles[x][y] = wxNullColour;
+            draw(std::max(1, static_cast<int>(std::round(delayMs / 7))),
+                 true);
+            moves.insert({oldPoint, newPoint});
+            return true;
+        }
     }
-    // TODO
     return false;
 }
 
@@ -449,6 +466,49 @@ PointSet BoardWidget::getEmptyNeighbours(int x, int y) {
             neighbours.insert(point);
     }
     return neighbours;
+}
+
+
+Point BoardWidget::nearestToMiddle(int x, int y, const PointSet& empties,
+                                   bool* move) {
+    const auto color = tiles[x][y];
+    const int midX = columns / 2;
+    const int midY = rows / 2;
+    const double oldRadius = std::hypot(midX - x, midY - y);
+    double shortestRadius;
+    Point radiusPoint;
+    for (const auto& point: empties) {
+        if (isSquare(point)) {
+            double newRadius = std::hypot(midX - point.x, midY - point.y);
+            if (isLegal(point.x, point.y, color))
+                newRadius -= 0.1; // Make same colors slightly attract
+            if (!radiusPoint.isValid() || shortestRadius > newRadius) {
+                shortestRadius = newRadius;
+                radiusPoint = point;
+            }
+        }
+    }
+    if (!std::isnan(shortestRadius) && oldRadius > shortestRadius) {
+        *move = true;
+        return radiusPoint;
+    }
+    *move = false;
+    return Point(x, y);
+}
+
+
+bool BoardWidget::isSquare(const Point& point) {
+    const auto x = point.x;
+    const auto y = point.y;
+    if (x > 0 && tiles[x - 1][y] != wxNullColour)
+        return true;
+    if (x + 1 < columns && tiles[x + 1][y] != wxNullColour)
+        return true;
+    if (y > 0 && tiles[x][y - 1] != wxNullColour)
+        return true;
+    if (y + 1 < rows && tiles[x][y + 1] != wxNullColour)
+        return true;
+    return false;
 }
 
 
