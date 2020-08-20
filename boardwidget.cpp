@@ -258,19 +258,20 @@ void BoardWidget::onPaint(wxPaintEvent&) {
 ColorPair BoardWidget::getColorPair(const wxColour& color) const {
     ColorPair colorPair;
     auto colors = colorMap();
-    if (colors.find(color.GetRGBA()) == colors.end()) { // dimmed
-        colorPair.light = wxColour(color).MakeDisabled();
+    if (colors.find(color.GetRGBA()) == colors.end()) {     // not found
+        colorPair.light = wxColour(color).MakeDisabled();   // ∴ dimmed
         colorPair.dark = color;
-        return colorPair;
-    }
-    const auto& threeColors = colors[color.GetRGBA()];
-    if (gameOver) {
-        colorPair.light = wxColour(threeColors.over);
-        colorPair.dark = wxColour(threeColors.dim);
     }
     else {
-        colorPair.light = wxColour(threeColors.light);
-        colorPair.dark = color;
+        const auto& threeColors = colors[color.GetRGBA()];
+        if (gameOver) {
+            colorPair.light = wxColour(threeColors.over);
+            colorPair.dark = wxColour(threeColors.dim);
+        }
+        else {
+            colorPair.light = wxColour(threeColors.light);
+            colorPair.dark = color;
+        }
     }
     return colorPair;
 }
