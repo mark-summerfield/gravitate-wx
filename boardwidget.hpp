@@ -61,6 +61,7 @@ private:
     void dimAdjoining(int x, int y, const wxColour& color);
     void populateAdjoining(int x, int y, const wxColour& color,
                            Adjoining& adjoining);
+    void deleteAdjoining(const Adjoining& adjoining);
 
     void onPaint(wxPaintEvent&);
     void onChar(wxKeyEvent&);

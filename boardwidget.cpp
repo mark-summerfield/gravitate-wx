@@ -374,7 +374,10 @@ void BoardWidget::dimAdjoining(int x, int y, const wxColour& color) {
         tiles[x][y] = wxColour(colors[key].dim);
     }
     draw(5);
-    // TODO
+    timer.Stop();
+    timer.Bind(wxEVT_TIMER,
+               [&](wxTimerEvent&) { deleteAdjoining(adjoining); });
+    timer.StartOnce(delayMs);
 }
 
 
@@ -395,6 +398,10 @@ void BoardWidget::populateAdjoining(int x, int y, const wxColour& color,
     populateAdjoining(x, y + 1, color, adjoining);
 }
 
+
+void BoardWidget::deleteAdjoining(const Adjoining& adjoining) {
+    std::cout << "deleteAdjoining\n";
+}
 // do score in closeTilesUp() (count is adjoining.size())
 //  score += static_cast<int>(round(sqrt(static_cast<double>(columns) * rows)) +
 //                  pow(count, maxColors / 2));
