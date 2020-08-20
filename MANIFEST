@@ -11,8 +11,8 @@ optionswindow.hpp
 optionswindow.cpp
 boardwidget.hpp # TODO 
 boardwidget.cpp # TODO ...
-svgartprovider.hpp
-svgartprovider.cpp
+artprovider.hpp
+artprovider.cpp
 buttonwidget.hpp
 buttonwidget.cpp
 constants.hpp

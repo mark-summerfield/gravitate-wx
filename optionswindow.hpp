@@ -16,7 +16,6 @@ public:
 private:
     void makeWidgets();
     void makeLayout();
-    void setSizes();
     void onOk(wxCommandEvent&);
 
     wxPanel* panel;

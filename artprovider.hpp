@@ -4,14 +4,14 @@
 
 /*
     Applications should call
-        wxArtProvider::Push(new SvgArtProvider);
+        wxArtProvider::Push(new ArtProvider);
     in Application::OnInit().
 */
 
 #include <wx/artprov.h>
 
 
-class SvgArtProvider : public wxArtProvider
+class ArtProvider : public wxArtProvider
 {
 protected:
   virtual wxBitmap CreateBitmap(const wxArtID& id,

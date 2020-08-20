@@ -20,7 +20,6 @@ OptionsWindow::OptionsWindow(wxWindow* parent)
     SetIcon(wxArtProvider::GetIcon(ICON_ID));
     makeWidgets();
     makeLayout();
-    setSizes();
     Bind(wxEVT_BUTTON, &OptionsWindow::onOk, this, wxID_OK);
 }
 
@@ -69,33 +68,20 @@ void OptionsWindow::makeWidgets() {
 }
 
 
-void OptionsWindow::setSizes() {
-    auto size = cancelButton->GetBestSize();
-    padLabel->SetMaxSize(wxSize(PAD * 2, size.GetHeight()));
-    okButton->SetMaxSize(size);
-    cancelButton->SetMaxSize(size);
-    size = delayMsSpinCtrl->GetBestSize();
-    wxSpinCtrl* spinners[]{columnsSpinCtrl, rowsSpinCtrl, maxColorsSpinCtrl,
-                           delayMsSpinCtrl};
-    size = wxSize(std::round(size.GetWidth() * 1.5), size.GetHeight());
-    for (auto& spinner: spinners)
-        spinner->SetMinSize(size);
-}
-
-
 void OptionsWindow::makeLayout() {
     const auto flag = wxALL;
+    const auto flagX = flag | wxEXPAND;
     auto grid = new wxGridBagSizer;
     grid->Add(columnsLabel, wxGBPosition(0, 0), wxDefaultSpan, flag, PAD);
-    grid->Add(columnsSpinCtrl, wxGBPosition(0, 1), wxDefaultSpan, flag,
+    grid->Add(columnsSpinCtrl, wxGBPosition(0, 1), wxDefaultSpan, flagX,
               PAD);
     grid->Add(rowsLabel, wxGBPosition(1, 0), wxDefaultSpan, flag, PAD);
-    grid->Add(rowsSpinCtrl, wxGBPosition(1, 1), wxDefaultSpan, flag, PAD);
+    grid->Add(rowsSpinCtrl, wxGBPosition(1, 1), wxDefaultSpan, flagX, PAD);
     grid->Add(maxColorsLabel, wxGBPosition(2, 0), wxDefaultSpan, flag, PAD);
-    grid->Add(maxColorsSpinCtrl, wxGBPosition(2, 1), wxDefaultSpan, flag,
+    grid->Add(maxColorsSpinCtrl, wxGBPosition(2, 1), wxDefaultSpan, flagX,
               PAD);
     grid->Add(delayMsLabel, wxGBPosition(3, 0), wxDefaultSpan, flag, PAD);
-    grid->Add(delayMsSpinCtrl, wxGBPosition(3, 1), wxDefaultSpan, flag,
+    grid->Add(delayMsSpinCtrl, wxGBPosition(3, 1), wxDefaultSpan, flagX,
               PAD);
     auto buttonSizer = new wxStdDialogButtonSizer;
     buttonSizer->AddButton(okButton);
@@ -105,7 +91,7 @@ void OptionsWindow::makeLayout() {
               PAD * 2);
     panel->SetSizerAndFit(grid);
     auto mainSizer = new wxBoxSizer(wxVERTICAL);
-    mainSizer->Add(panel, 1, wxALL | wxEXPAND, PAD);
+    mainSizer->Add(panel, 1, flagX, PAD);
     SetSizerAndFit(mainSizer);
 }
 

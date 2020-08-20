@@ -2,7 +2,7 @@
 // License: GPLv3
 
 #include "mainwindow.hpp"
-#include "svgartprovider.hpp"
+#include "artprovider.hpp"
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
@@ -22,7 +22,7 @@ wxIMPLEMENT_APP(Application);
 bool Application::OnInit() {
     SetAppName("Gravitate");
     SetVendorName("qtrac.eu");
-    wxArtProvider::Push(new SvgArtProvider);
+    wxArtProvider::Push(new ArtProvider);
     MainWindow *window = new MainWindow();
     window->Show(true);
     return true;

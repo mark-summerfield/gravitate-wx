@@ -2,7 +2,7 @@
 // License: GPLv3
 
 #include "constants.hpp"
-#include "svgartprovider.hpp"
+#include "artprovider.hpp"
 
 #include "images/about.xpm"
 #include "images/gravitate.xpm"
@@ -14,8 +14,8 @@
 #include <wx/dcsvg.h>
 
 
-wxBitmap SvgArtProvider::CreateBitmap(const wxArtID& id, const wxArtClient&,
-                                      const wxSize&) {
+wxBitmap ArtProvider::CreateBitmap(const wxArtID& id, const wxArtClient&,
+                                   const wxSize&) {
     if (id == ICON_ID)
         return wxBitmap(gravitate_xpm);
     if (id == wxART_NEW)
