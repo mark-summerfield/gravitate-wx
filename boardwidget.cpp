@@ -12,7 +12,6 @@
 #include <cmath>
 #include <functional>
 #include <memory>
-#include <unordered_map>
 
 
 wxDEFINE_EVENT(SCORE_EVENT, wxCommandEvent);
@@ -29,8 +28,8 @@ struct ColorPair {
 };
 
 
-struct TilePos {
-    TilePos(int x_=INVALID_POS, int y_=INVALID_POS) : x(x_), y(y_) {}
+struct Point {
+    Point(int x_=INVALID_POS, int y_=INVALID_POS) : x(x_), y(y_) {}
 
     int x;
     int y;
@@ -46,13 +45,13 @@ struct TileSize {
 using ColorMap = std::unordered_map<wxUint32, wxUint32>;
 
 
-bool operator==(const TilePos& a, const TilePos& b) {
+bool operator==(const Point& a, const Point& b) {
     return a.x == b.x && a.y == b.y;
 }
 
 namespace std {
-    template<> struct hash<TilePos> {
-        size_t operator()(const TilePos& xy) const noexcept {
+    template<> struct hash<Point> {
+        size_t operator()(const Point& xy) const noexcept {
             return std::hash<int>{}(xy.x) ^ (std::hash<int>{}(xy.y) << 1);
         }
     };
@@ -85,6 +84,9 @@ BoardWidget::BoardWidget(wxWindow* parent)
           maxColors(MAX_COLORS_DEFAULT), delayMs(DELAY_MS_DEFAULT),
           selectedX(INVALID_POS), selectedY(INVALID_POS) {
     SetDoubleBuffered(true);
+    const auto seed = std::chrono::system_clock::now().time_since_epoch()
+        .count();
+    randomizer.seed(seed);
     Bind(wxEVT_LEFT_DOWN, &BoardWidget::onClick, this);
     Bind(wxEVT_CHAR_HOOK, &BoardWidget::onChar, this);
     Bind(wxEVT_PAINT, &BoardWidget::onPaint, this);
@@ -96,15 +98,12 @@ void BoardWidget::newGame() {
     gameOver = false;
     score = 0;
     selectedX = selectedY = INVALID_POS;
-    const auto seed = std::chrono::system_clock::now().time_since_epoch()
-        .count();
-    Randomizer randomizer(seed);
     std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
     config->Read(MAX_COLORS, &maxColors, MAX_COLORS_DEFAULT);
-    const auto colors = getColors(randomizer);
     config->Read(COLUMNS, &columns, COLUMNS_DEFAULT);
     config->Read(ROWS, &rows, ROWS_DEFAULT);
     config->Read(DELAY_MS, &delayMs, DELAY_MS_DEFAULT);
+    const auto colors = getColors(randomizer);
     std::uniform_int_distribution<int> distribution(0, maxColors - 1);
     tiles.clear();
     for (int x = 0; x < columns; ++x) {
@@ -354,7 +353,7 @@ bool BoardWidget::isLegal(int x, int y, const wxColour& color) {
 
 
 void BoardWidget::dimAdjoining(int x, int y, const wxColour& color) {
-    Adjoining adjoining;
+    PointSet adjoining;
     populateAdjoining(x, y, color, adjoining);
     auto colors = colorMap();
     for (auto it = adjoining.cbegin(); it != adjoining.cend(); ++it) {
@@ -364,18 +363,18 @@ void BoardWidget::dimAdjoining(int x, int y, const wxColour& color) {
     }
     draw(5);
     timer.Bind(wxEVT_TIMER,
-               [&](wxTimerEvent&) { deleteAdjoining(adjoining); });
+               [=](wxTimerEvent&) { deleteAdjoining(adjoining); });
     timer.StartOnce(delayMs);
 }
 
 
 void BoardWidget::populateAdjoining(int x, int y, const wxColour& color,
-                                    Adjoining& adjoining) {
+                                    PointSet& adjoining) {
     if (x < 0 || x >= columns || y < 0 || y >= rows)
         return; // Fallen off an edge
     if (tiles[x][y] != color)
         return; // Color doesn't match
-    const auto tilePos = TilePos(x, y);
+    const auto tilePos = Point(x, y);
     auto it = adjoining.find(tilePos);
     if (it != adjoining.end())
         return; // Already done (C++20 supports .contains())
@@ -387,9 +386,81 @@ void BoardWidget::populateAdjoining(int x, int y, const wxColour& color,
 }
 
 
-void BoardWidget::deleteAdjoining(const Adjoining& adjoining) {
-    std::cout << "deleteAdjoining\n";
+void BoardWidget::deleteAdjoining(const PointSet adjoining) {
+    for (auto it = adjoining.cbegin(); it != adjoining.cend(); ++it)
+        tiles[(*it).x][(*it).y] = wxNullColour;
+    draw(5);
+    const auto size = adjoining.size();
+    timer.Bind(wxEVT_TIMER, [=](wxTimerEvent&) { closeTilesUp(size); });
+    timer.StartOnce(delayMs);
 }
-// do score in closeTilesUp() (count is adjoining.size())
-//  score += static_cast<int>(round(sqrt(static_cast<double>(columns) * rows)) +
-//                  pow(count, maxColors / 2));
+
+
+void BoardWidget::closeTilesUp(size_t count) {
+    moveTiles();
+    if (selectedX != INVALID_POS && selectedY != INVALID_POS)
+        if (tiles[selectedX][selectedY] == wxNullColour) {
+            selectedX = columns / 2;
+            selectedY = rows / 2;
+        }
+    draw();
+    score += static_cast<int>(
+        std::round(std::sqrt(static_cast<double>(columns) * rows)) +
+        std::pow(count, maxColors / 2));
+    announceScore();
+    checkGameOver();
+}
+
+
+void BoardWidget::moveTiles() {
+    bool moved = true;
+    PointMap moves;
+    while (moved) {
+        moved = false;
+        for (int x: rippledRange(columns))
+            for (int y: rippledRange(rows)) {
+                if (tiles[x][y] != wxNullColour)
+                    if (moveIsPossible(x, y, moves)) {
+                        moved = true;
+                        break;
+                    }
+            }
+    }
+}
+
+
+bool BoardWidget::moveIsPossible(int x, int y, PointMap& moves) {
+std::cerr << "moveIsPossible\n";
+    const auto empties = getEmptyNeighbours(x, y);
+    if (!empties.empty()) {
+    }
+    // TODO
+    return false;
+}
+
+
+PointSet BoardWidget::getEmptyNeighbours(int x, int y) {
+    PointSet neighbours;
+    const Point points[]{Point(x - 1, y), Point(x + 1, y),
+                         Point(x, y - 1), Point(x, y + 1)};
+    for (auto point: points) {
+        if (0 <= point.x && point.x < columns && 0 <= point.y &&
+                point.y < rows && tiles[point.x][point.y] == wxNullColour)
+            neighbours.insert(point);
+    }
+    return neighbours;
+}
+
+
+void BoardWidget::checkGameOver() {
+std::cerr << "checkGameOver\n";
+}
+
+
+Ripple BoardWidget::rippledRange(int limit) {
+    Ripple ripple;
+    for (int i = 0; i < limit; ++i)
+        ripple.push_back(i);
+    std::shuffle(ripple.begin(), ripple.end(), randomizer);
+    return ripple;
+}

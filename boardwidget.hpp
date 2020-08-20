@@ -11,21 +11,24 @@
 #include <wx/graphics.h>
 
 #include <random>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 
 struct ColorPair;
-struct TilePos;
+struct Point;
 struct TileSize;
 
 
 using ColorVector = std::vector<wxColour>;
+using Coords = double[COORDS_LEN][2];
+using PointMap = std::unordered_map<Point, Point>;
+using PointSet = std::unordered_set<Point>;
+using Randomizer = std::default_random_engine;
+using Ripple = std::vector<int>;
 using TileRow = std::vector<wxColour>;
 using TileGrid = std::vector<TileRow>;
-using Randomizer = std::default_random_engine;
-using Coords = double[COORDS_LEN][2];
-using Adjoining = std::unordered_set<TilePos>;
 
 
 wxDECLARE_EVENT(SCORE_EVENT, wxCommandEvent);
@@ -60,8 +63,14 @@ private:
     bool isLegal(int x, int y, const wxColour& color);
     void dimAdjoining(int x, int y, const wxColour& color);
     void populateAdjoining(int x, int y, const wxColour& color,
-                           Adjoining& adjoining);
-    void deleteAdjoining(const Adjoining& adjoining);
+                           PointSet& adjoining);
+    void deleteAdjoining(const PointSet adjoining);
+    void closeTilesUp(size_t count);
+    void moveTiles();
+    bool moveIsPossible(int x, int y, PointMap& moves);
+    PointSet getEmptyNeighbours(int x, int y);
+    void checkGameOver();
+    Ripple rippledRange(int limit);
 
     void onPaint(wxPaintEvent&);
     void onChar(wxKeyEvent&);
@@ -81,4 +90,5 @@ private:
     int selectedY;
     TileGrid tiles;
     wxTimer timer;
+    Randomizer randomizer;
 };
