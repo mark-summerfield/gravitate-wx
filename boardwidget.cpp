@@ -12,6 +12,7 @@
 #include <cmath>
 #include <functional>
 #include <memory>
+#include <unordered_map>
 
 
 wxDEFINE_EVENT(SCORE_EVENT, wxCommandEvent);
@@ -42,6 +43,16 @@ struct TileSize {
 };
 
 
+struct Colors {
+    wxUint32 light;
+    wxUint32 dim;
+    wxUint32 over;
+};
+
+
+using ColorMap = std::unordered_map<wxUint32, Colors>;
+
+
 bool operator==(const TilePos& a, const TilePos& b) {
     return a.x == b.x && a.y == b.y;
 }
@@ -53,6 +64,26 @@ namespace std {
         }
     };
 }
+
+
+static const ColorMap& colorMap() {
+    static ColorMap colors;
+    if (colors.empty())
+        colors = { // key=dark, value={light, dim, over}
+        {{0xFF800000}, {0xFFF99999, 0xFF700000, 0xFF6C0000}},
+        {{0xFF800000}, {0xFFF99999, 0xFF700000, 0xFF6C0000}},
+        {{0xFF008000}, {0xFF99F999, 0xFF007000, 0xFF006C00}},
+        {{0xFF808000}, {0xFFF9F999, 0xFF707000, 0xFF6C6C00}},
+        {{0xFF000080}, {0xFF9999F9, 0xFF000070, 0xFF00006C}},
+        {{0xFF800080}, {0xFFF999F9, 0xFF700070, 0xFF6C006C}},
+        {{0xFF008080}, {0xFF99F9F9, 0xFF007070, 0xFF006C6C}},
+        {{0xFF808080}, {0xFFF9F9F9, 0xFF707070, 0xFF6C6C6C}},
+        };
+    return colors;
+}
+
+
+size_t BoardWidget::colorCount() { return colorMap().size(); }
 
 
 BoardWidget::BoardWidget(wxWindow* parent)
@@ -101,23 +132,6 @@ ColorVector BoardWidget::getColors(Randomizer &randomizer) {
     std::shuffle(result.begin(), result.end(), randomizer);
     result.resize(maxColors);
     return result;
-}
-
-
-const ColorMap& BoardWidget::colorMap() {
-    static ColorMap colors;
-    if (colors.empty())
-        colors = { // key=dark, value={light, dim, over}
-            {{0xFF800000}, {0xFFF99999, 0xFFCE0000, 0xFF6C0000}},
-            {{0xFF800000}, {0xFFF99999, 0xFFCE0000, 0xFF6C0000}},
-            {{0xFF008000}, {0xFF99F999, 0xFF00CE00, 0xFF006C00}},
-            {{0xFF808000}, {0xFFF9F999, 0xFFCECE00, 0xFF6C6C00}},
-            {{0xFF000080}, {0xFF9999F9, 0xFF0000CE, 0xFF00006C}},
-            {{0xFF800080}, {0xFFF999F9, 0xFFCE00CE, 0xFF6C006C}},
-            {{0xFF008080}, {0xFF99F9F9, 0xFF00CECE, 0xFF006C6C}},
-            {{0xFF808080}, {0xFFF9F9F9, 0xFFCECECE, 0xFF6C6C6C}},
-        };
-    return colors;
 }
 
 
@@ -242,9 +256,14 @@ void BoardWidget::onPaint(wxPaintEvent&) {
 
 
 ColorPair BoardWidget::getColorPair(const wxColour& color) const {
-    auto colors = colorMap();
-    const auto& threeColors = colors[color.GetRGBA()];
     ColorPair colorPair;
+    auto colors = colorMap();
+    if (colors.find(color.GetRGBA()) == colors.end()) { // dimmed
+        colorPair.light = wxColour(color).MakeDisabled();
+        colorPair.dark = color;
+        return colorPair;
+    }
+    const auto& threeColors = colors[color.GetRGBA()];
     if (gameOver) {
         colorPair.light = wxColour(threeColors.over);
         colorPair.dark = wxColour(threeColors.dim);

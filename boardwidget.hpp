@@ -11,7 +11,6 @@
 #include <wx/graphics.h>
 
 #include <random>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -20,14 +19,7 @@ struct ColorPair;
 struct TilePos;
 struct TileSize;
 
-struct ThreeColors {
-    wxUint32 light;
-    wxUint32 dim;
-    wxUint32 over;
-};
 
-
-using ColorMap = std::unordered_map<wxUint32, ThreeColors>;
 using ColorVector = std::vector<wxColour>;
 using TileRow = std::vector<wxColour>;
 using TileGrid = std::vector<TileRow>;
@@ -42,7 +34,7 @@ wxDECLARE_EVENT(GAME_OVER_EVENT, wxCommandEvent);
 
 class BoardWidget : public wxWindow {
 public:
-    static const ColorMap& colorMap();
+    static size_t colorCount();
 
     explicit BoardWidget(wxWindow* parent);
 
