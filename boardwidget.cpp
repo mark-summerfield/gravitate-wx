@@ -392,11 +392,11 @@ void BoardWidget::deleteAdjoining(const PointSet adjoining) {
 
 void BoardWidget::closeTilesUp(size_t count) {
     moveTiles();
-    if (selected.isValid())
-        if (tiles[selected.x][selected.y] == wxNullColour) {
-            selected.x = columns / 2;
-            selected.y = rows / 2;
-        }
+    if (selected.isValid() &&
+            tiles[selected.x][selected.y] == wxNullColour) {
+        selected.x = columns / 2;
+        selected.y = rows / 2;
+    }
     draw();
     score += static_cast<int>(
         std::round(std::sqrt(static_cast<double>(columns) * rows)) +
@@ -427,12 +427,9 @@ bool BoardWidget::moveIsPossible(const Point point, PointMap& moves) {
     const auto empties = getEmptyNeighbours(point);
     if (!empties.empty()) {
         bool move;
-        const auto midPoint = nearestToMiddle(point, empties, &move);
-        auto it = moves.find(midPoint);
-        if (it == moves.end())
-            return false; // avoid endless loop
-        const auto newPoint = it->second;
-        if (newPoint == point)
+        const auto newPoint = nearestToMiddle(point, empties, &move);
+        auto it = moves.find(newPoint);
+        if (it != moves.end() && it->second == point)
             return false; // avoid endless loop
         if (move) {
             tiles[newPoint.x][newPoint.y] = tiles[point.x][point.y];
