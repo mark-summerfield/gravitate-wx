@@ -16,6 +16,10 @@
 #include <vector>
 
 
+struct ColorPair;
+struct TilePos;
+struct TileSize;
+
 struct ThreeColors {
     wxUint32 light;
     wxUint32 dim;
@@ -29,35 +33,11 @@ using TileRow = std::vector<wxColour>;
 using TileGrid = std::vector<TileRow>;
 using Randomizer = std::default_random_engine;
 using Coords = double[COORDS_LEN][2];
+using Adjoining = std::unordered_set<TilePos>;
 
 
 wxDECLARE_EVENT(SCORE_EVENT, wxCommandEvent);
 wxDECLARE_EVENT(GAME_OVER_EVENT, wxCommandEvent);
-
-
-const int INVALID_POS = -1;
-
-
-struct TilePos {
-    TilePos(int x_=INVALID_POS, int y_=INVALID_POS) : x(x_), y(y_) {}
-
-    int x;
-    int y;
-};
-
-using Adjoining = std::unordered_set<TilePos>;
-
-
-struct TileSize {
-    double width;
-    double height;
-};
-
-
-struct ColorPair {
-    wxColour light;
-    wxColour dark;
-};
 
 
 class BoardWidget : public wxWindow {

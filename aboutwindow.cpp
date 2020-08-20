@@ -7,6 +7,7 @@
 
 #include <wx/artprov.h>
 #include <wx/datetime.h>
+#include <wx/html/htmlwin.h>
 #include <wx/platinfo.h>
 
 

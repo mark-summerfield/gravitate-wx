@@ -2,9 +2,11 @@
 // Copyright © 2020 Mark Summerfield. All rights reserved.
 // License: GPLv3
 
-// Applications should call
-//  wxArtProvider::Push(new SvgArtProvider);
-// in Application::OnInit().
+/*
+    Applications should call
+        wxArtProvider::Push(new SvgArtProvider);
+    in Application::OnInit().
+*/
 
 #include <wx/artprov.h>
 

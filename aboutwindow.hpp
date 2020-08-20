@@ -6,7 +6,6 @@
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif
-#include <wx/html/htmlwin.h>
 
 
 class AboutWindow : public wxDialog {

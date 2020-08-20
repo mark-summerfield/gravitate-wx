@@ -19,6 +19,27 @@ wxDEFINE_EVENT(GAME_OVER_EVENT, wxCommandEvent);
 
 
 const auto BACKGROUND_COLOR = wxColour(0xFFFFFEE0);
+const int INVALID_POS = -1;
+
+
+struct ColorPair {
+    wxColour light;
+    wxColour dark;
+};
+
+
+struct TilePos {
+    TilePos(int x_=INVALID_POS, int y_=INVALID_POS) : x(x_), y(y_) {}
+
+    int x;
+    int y;
+};
+
+
+struct TileSize {
+    double width;
+    double height;
+};
 
 
 bool operator==(const TilePos& a, const TilePos& b) {
