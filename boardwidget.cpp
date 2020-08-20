@@ -43,14 +43,7 @@ struct TileSize {
 };
 
 
-struct Colors {
-    wxUint32 light;
-    wxUint32 dim;
-    wxUint32 over;
-};
-
-
-using ColorMap = std::unordered_map<wxUint32, Colors>;
+using ColorMap = std::unordered_map<wxUint32, wxUint32>;
 
 
 bool operator==(const TilePos& a, const TilePos& b) {
@@ -69,15 +62,15 @@ namespace std {
 static const ColorMap& colorMap() {
     static ColorMap colors;
     if (colors.empty())
-        colors = { // key=dark, value={light, dim, over}
-        {{0xFF800000}, {0xFFF99999, 0xFF700000, 0xFF6C0000}},
-        {{0xFF800000}, {0xFFF99999, 0xFF700000, 0xFF6C0000}},
-        {{0xFF008000}, {0xFF99F999, 0xFF007000, 0xFF006C00}},
-        {{0xFF808000}, {0xFFF9F999, 0xFF707000, 0xFF6C6C00}},
-        {{0xFF000080}, {0xFF9999F9, 0xFF000070, 0xFF00006C}},
-        {{0xFF800080}, {0xFFF999F9, 0xFF700070, 0xFF6C006C}},
-        {{0xFF008080}, {0xFF99F9F9, 0xFF007070, 0xFF006C6C}},
-        {{0xFF808080}, {0xFFF9F9F9, 0xFF707070, 0xFF6C6C6C}},
+        colors = { // key=dark, value=light
+        {0xFF800000, 0xFFF99999},
+        {0xFF800000, 0xFFF99999},
+        {0xFF008000, 0xFF99F999},
+        {0xFF808000, 0xFFF9F999},
+        {0xFF000080, 0xFF9999F9},
+        {0xFF800080, 0xFFF999F9},
+        {0xFF008080, 0xFF99F9F9},
+        {0xFF808080, 0xFFF9F9F9},
         };
     return colors;
 }
@@ -258,19 +251,16 @@ void BoardWidget::onPaint(wxPaintEvent&) {
 ColorPair BoardWidget::getColorPair(const wxColour& color) const {
     ColorPair colorPair;
     auto colors = colorMap();
-    if (colors.find(color.GetRGBA()) == colors.end()) {     // not found
-        colorPair.light = wxColour(color).MakeDisabled();   // ∴ dimmed
-        colorPair.dark = color;
+    if (colors.find(color.GetRGBA()) == colors.end()) { // not found
+        colorPair.light = color;                        // ∴ dimmed
+        colorPair.dark = color.ChangeLightness(70);
     }
     else {
-        const auto& threeColors = colors[color.GetRGBA()];
+        colorPair.light = wxColour(colors[color.GetRGBA()]);
+        colorPair.dark = color;
         if (gameOver) {
-            colorPair.light = wxColour(threeColors.over);
-            colorPair.dark = wxColour(threeColors.dim);
-        }
-        else {
-            colorPair.light = wxColour(threeColors.light);
-            colorPair.dark = color;
+            colorPair.light = colorPair.light.ChangeLightness(85);
+            colorPair.dark = colorPair.dark.ChangeLightness(85);
         }
     }
     return colorPair;
@@ -370,11 +360,9 @@ void BoardWidget::dimAdjoining(int x, int y, const wxColour& color) {
     for (auto it = adjoining.cbegin(); it != adjoining.cend(); ++it) {
         const int x = (*it).x;
         const int y = (*it).y;
-        const auto key = tiles[x][y].GetRGBA();
-        tiles[x][y] = wxColour(colors[key].dim);
+        tiles[x][y] = tiles[x][y].ChangeLightness(160);
     }
     draw(5);
-    timer.Stop();
     timer.Bind(wxEVT_TIMER,
                [&](wxTimerEvent&) { deleteAdjoining(adjoining); });
     timer.StartOnce(delayMs);

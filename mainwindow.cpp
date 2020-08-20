@@ -31,7 +31,6 @@ MainWindow::MainWindow()
 
 void MainWindow::setTemporaryStatusMessage(const wxString& message,
                                            int timeoutMs) {
-    statusTimer.Stop();
     SetStatusText(message);
     statusTimer.Bind(wxEVT_TIMER,
                      [&](wxTimerEvent&) { SetStatusText(""); });
