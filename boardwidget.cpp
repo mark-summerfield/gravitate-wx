@@ -19,22 +19,11 @@ wxDEFINE_EVENT(GAME_OVER_EVENT, wxCommandEvent);
 
 
 const auto BACKGROUND_COLOR = wxColour(0xFFFFFEE0);
-const int INVALID_POS = -1;
 
 
 struct ColorPair {
     wxColour light;
     wxColour dark;
-};
-
-
-struct Point {
-    Point(int x_=INVALID_POS, int y_=INVALID_POS) : x(x_), y(y_) {}
-
-    int x;
-    int y;
-
-    bool isValid() const { return x != INVALID_POS && y != INVALID_POS; }
 };
 
 
@@ -83,8 +72,7 @@ size_t BoardWidget::colorCount() { return colorMap().size(); }
 BoardWidget::BoardWidget(wxWindow* parent)
         : wxWindow(parent, wxID_ANY), score(0), gameOver(true),
           drawing(false), columns(COLUMNS_DEFAULT), rows(ROWS_DEFAULT),
-          maxColors(MAX_COLORS_DEFAULT), delayMs(DELAY_MS_DEFAULT),
-          selectedX(INVALID_POS), selectedY(INVALID_POS) {
+          maxColors(MAX_COLORS_DEFAULT), delayMs(DELAY_MS_DEFAULT) {
     SetDoubleBuffered(true);
     const auto seed = std::chrono::system_clock::now().time_since_epoch()
         .count();
@@ -99,7 +87,7 @@ BoardWidget::BoardWidget(wxWindow* parent)
 void BoardWidget::newGame() {
     gameOver = false;
     score = 0;
-    selectedX = selectedY = INVALID_POS;
+    selected.x = selected.y = INVALID_POS;
     std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
     config->Read(MAX_COLORS, &maxColors, MAX_COLORS_DEFAULT);
     config->Read(COLUMNS, &columns, COLUMNS_DEFAULT);
@@ -173,8 +161,8 @@ void BoardWidget::onChar(wxKeyEvent& event) {
             key == WXK_DOWN)
         onMoveKey(key);
     else if (key == WXK_SPACE) {
-        if (selectedX != INVALID_POS && selectedY != INVALID_POS)
-            deleteTile(selectedX, selectedY);
+        if (selected.isValid())
+            deleteTile(selected);
     }
     else
         event.Skip();
@@ -182,13 +170,13 @@ void BoardWidget::onChar(wxKeyEvent& event) {
 
 
 void BoardWidget::onMoveKey(int code) {
-    if (selectedX == INVALID_POS || selectedY == INVALID_POS) {
-        selectedX = columns / 2;
-        selectedY = rows / 2;
+    if (!selected.isValid()) {
+        selected.x = columns / 2;
+        selected.y = rows / 2;
     }
     else {
-        int x = selectedX;
-        int y = selectedY;
+        int x = selected.x;
+        int y = selected.y;
         if (code == WXK_LEFT)
             --x;
         else if (code == WXK_RIGHT)
@@ -199,8 +187,8 @@ void BoardWidget::onMoveKey(int code) {
             ++y;
         if (0 <= x && x < columns && 0 <= y && y < rows &&
                 tiles[x][y] != wxNullColour) {
-            selectedX = x;
-            selectedY = y;
+            selected.x = x;
+            selected.y = y;
         }
     }
     draw();
@@ -215,11 +203,11 @@ void BoardWidget::onClick(wxMouseEvent& event) {
     const auto size = tileSize();
     const int x = static_cast<int>(event.GetX() / round(size.width));
     const int y = static_cast<int>(event.GetY() / round(size.height));
-    if (selectedX != INVALID_POS || selectedY != INVALID_POS) {
-        selectedX = selectedY = INVALID_POS;
+    if (selected.isValid()) {
+        selected.x = selected.y = INVALID_POS;
         draw();
     }
-    deleteTile(x, y);
+    deleteTile(Point(x, y));
 }
 
 
@@ -288,7 +276,7 @@ void BoardWidget::drawTile(wxGraphicsContext* gc, int x, int y,
         gc->SetBrush(brush);
         gc->DrawRectangle(x1 + edge, y1 + edge, width - edge2,
                           height - edge2);
-        if (selectedX == x && selectedY == y)
+        if (selected.x == x && selected.x == y)
             drawFocus(gc, x1, y1, edge, width, height);
     }
 }
@@ -331,17 +319,19 @@ void BoardWidget::drawFocus(wxGraphicsContext* gc, double x1, double y1,
 }
 
 
-void BoardWidget::deleteTile(int x, int y) {
-    auto color = tiles[x][y];
-    if (color == wxNullColour || !isLegal(x, y, color))
+void BoardWidget::deleteTile(const Point point) {
+    auto color = tiles[point.x][point.y];
+    if (color == wxNullColour || !isLegal(point, color))
         return;
-    dimAdjoining(x, y, color);
+    dimAdjoining(point, color);
 }
 
 
-bool BoardWidget::isLegal(int x, int y, const wxColour& color) {
+bool BoardWidget::isLegal(const Point point, const wxColour& color) {
     // A legal click is on a colored tile that is adjacent to another
     // tile of the same color.
+    const auto& x = point.x;
+    const auto& y = point.y;
     if (x > 0 && tiles[x - 1][y] == color)
         return true;
     if (x + 1 < columns && tiles[x + 1][y] == color)
@@ -354,9 +344,9 @@ bool BoardWidget::isLegal(int x, int y, const wxColour& color) {
 }
 
 
-void BoardWidget::dimAdjoining(int x, int y, const wxColour& color) {
+void BoardWidget::dimAdjoining(const Point point, const wxColour& color) {
     PointSet adjoining;
-    populateAdjoining(x, y, color, adjoining);
+    populateAdjoining(point, color, adjoining);
     auto colors = colorMap();
     for (auto it = adjoining.cbegin(); it != adjoining.cend(); ++it) {
         const int x = (*it).x;
@@ -370,21 +360,23 @@ void BoardWidget::dimAdjoining(int x, int y, const wxColour& color) {
 }
 
 
-void BoardWidget::populateAdjoining(int x, int y, const wxColour& color,
+void BoardWidget::populateAdjoining(const Point point,
+                                    const wxColour& color,
                                     PointSet& adjoining) {
+    const auto& x = point.x;
+    const auto& y = point.y;
     if (x < 0 || x >= columns || y < 0 || y >= rows)
         return; // Fallen off an edge
     if (tiles[x][y] != color)
         return; // Color doesn't match
-    const auto tilePos = Point(x, y);
-    auto it = adjoining.find(tilePos);
+    auto it = adjoining.find(point);
     if (it != adjoining.end())
         return; // Already done (C++20 supports .contains())
-    adjoining.insert(tilePos);
-    populateAdjoining(x - 1, y, color, adjoining);
-    populateAdjoining(x + 1, y, color, adjoining);
-    populateAdjoining(x, y - 1, color, adjoining);
-    populateAdjoining(x, y + 1, color, adjoining);
+    adjoining.insert(point);
+    populateAdjoining(Point(x - 1, y), color, adjoining);
+    populateAdjoining(Point(x + 1, y), color, adjoining);
+    populateAdjoining(Point(x, y - 1), color, adjoining);
+    populateAdjoining(Point(x, y + 1), color, adjoining);
 }
 
 
@@ -400,10 +392,10 @@ void BoardWidget::deleteAdjoining(const PointSet adjoining) {
 
 void BoardWidget::closeTilesUp(size_t count) {
     moveTiles();
-    if (selectedX != INVALID_POS && selectedY != INVALID_POS)
-        if (tiles[selectedX][selectedY] == wxNullColour) {
-            selectedX = columns / 2;
-            selectedY = rows / 2;
+    if (selected.isValid())
+        if (tiles[selected.x][selected.y] == wxNullColour) {
+            selected.x = columns / 2;
+            selected.y = rows / 2;
         }
     draw();
     score += static_cast<int>(
@@ -422,7 +414,7 @@ void BoardWidget::moveTiles() {
         for (int x: rippledRange(columns))
             for (int y: rippledRange(rows)) {
                 if (tiles[x][y] != wxNullColour)
-                    if (moveIsPossible(x, y, moves)) {
+                    if (moveIsPossible(Point(x, y), moves)) {
                         moved = true;
                         break;
                     }
@@ -431,24 +423,23 @@ void BoardWidget::moveTiles() {
 }
 
 
-bool BoardWidget::moveIsPossible(int x, int y, PointMap& moves) {
-    const auto empties = getEmptyNeighbours(x, y);
+bool BoardWidget::moveIsPossible(const Point point, PointMap& moves) {
+    const auto empties = getEmptyNeighbours(point);
     if (!empties.empty()) {
         bool move;
-        const auto midPoint = nearestToMiddle(x, y, empties, &move);
+        const auto midPoint = nearestToMiddle(point, empties, &move);
         auto it = moves.find(midPoint);
         if (it == moves.end())
             return false; // avoid endless loop
         const auto newPoint = it->second;
-        const auto oldPoint = Point(x, y);
-        if (newPoint == oldPoint)
+        if (newPoint == point)
             return false; // avoid endless loop
         if (move) {
-            tiles[newPoint.x][newPoint.y] = tiles[x][y];
-            tiles[x][y] = wxNullColour;
+            tiles[newPoint.x][newPoint.y] = tiles[point.x][point.y];
+            tiles[point.x][point.y] = wxNullColour;
             draw(std::max(1, static_cast<int>(std::round(delayMs / 7))),
                  true);
-            moves.insert({oldPoint, newPoint});
+            moves.insert({point, newPoint});
             return true;
         }
     }
@@ -456,35 +447,39 @@ bool BoardWidget::moveIsPossible(int x, int y, PointMap& moves) {
 }
 
 
-PointSet BoardWidget::getEmptyNeighbours(int x, int y) {
+PointSet BoardWidget::getEmptyNeighbours(const Point point) {
     PointSet neighbours;
+    const auto& x = point.x;
+    const auto& y = point.y;
     const Point points[]{Point(x - 1, y), Point(x + 1, y),
                          Point(x, y - 1), Point(x, y + 1)};
-    for (auto point: points) {
-        if (0 <= point.x && point.x < columns && 0 <= point.y &&
-                point.y < rows && tiles[point.x][point.y] == wxNullColour)
-            neighbours.insert(point);
+    for (auto newPoint: points) {
+        if (0 <= newPoint.x && newPoint.x < columns && 0 <= newPoint.y &&
+                newPoint.y < rows &&
+                tiles[newPoint.x][newPoint.y] == wxNullColour)
+            neighbours.insert(newPoint);
     }
     return neighbours;
 }
 
 
-Point BoardWidget::nearestToMiddle(int x, int y, const PointSet& empties,
-                                   bool* move) {
-    const auto color = tiles[x][y];
+Point BoardWidget::nearestToMiddle(const Point point,
+                                   const PointSet& empties, bool* move) {
+    const auto color = tiles[point.x][point.y];
     const int midX = columns / 2;
     const int midY = rows / 2;
-    const double oldRadius = std::hypot(midX - x, midY - y);
-    double shortestRadius;
+    const double oldRadius = std::hypot(midX - point.x, midY - point.y);
+    double shortestRadius = NAN;
     Point radiusPoint;
-    for (const auto& point: empties) {
-        if (isSquare(point)) {
-            double newRadius = std::hypot(midX - point.x, midY - point.y);
-            if (isLegal(point.x, point.y, color))
+    for (const auto& newPoint: empties) {
+        if (isSquare(newPoint)) {
+            double newRadius = std::hypot(midX - newPoint.x,
+                                          midY - newPoint.y);
+            if (isLegal(newPoint, color))
                 newRadius -= 0.1; // Make same colors slightly attract
             if (!radiusPoint.isValid() || shortestRadius > newRadius) {
                 shortestRadius = newRadius;
-                radiusPoint = point;
+                radiusPoint = newPoint;
             }
         }
     }
@@ -493,7 +488,7 @@ Point BoardWidget::nearestToMiddle(int x, int y, const PointSet& empties,
         return radiusPoint;
     }
     *move = false;
-    return Point(x, y);
+    return point;
 }
 
 

@@ -16,9 +16,20 @@
 #include <vector>
 
 
+const int INVALID_POS = -1;
+
+
 struct ColorPair;
-struct Point;
 struct TileSize;
+
+struct Point {
+    Point(int x_=INVALID_POS, int y_=INVALID_POS) : x(x_), y(y_) {}
+
+    int x;
+    int y;
+
+    bool isValid() const { return x != INVALID_POS && y != INVALID_POS; }
+};
 
 
 using ColorVector = std::vector<wxColour>;
@@ -59,17 +70,17 @@ private:
                      const Coords& coords);
     void drawFocus(wxGraphicsContext* gc, double x1, double y1, double edge,
                    double width, double height);
-    void deleteTile(int x, int y);
-    bool isLegal(int x, int y, const wxColour& color);
-    void dimAdjoining(int x, int y, const wxColour& color);
-    void populateAdjoining(int x, int y, const wxColour& color,
+    void deleteTile(const Point point);
+    bool isLegal(const Point point, const wxColour& color);
+    void dimAdjoining(const Point point, const wxColour& color);
+    void populateAdjoining(const Point point, const wxColour& color,
                            PointSet& adjoining);
     void deleteAdjoining(const PointSet adjoining);
     void closeTilesUp(size_t count);
     void moveTiles();
-    bool moveIsPossible(int x, int y, PointMap& moves);
-    PointSet getEmptyNeighbours(int x, int y);
-    Point nearestToMiddle(int x, int y, const PointSet& empties,
+    bool moveIsPossible(const Point point, PointMap& moves);
+    PointSet getEmptyNeighbours(const Point point);
+    Point nearestToMiddle(const Point point, const PointSet& empties,
                           bool* move);
     bool isSquare(const Point& point);
     void checkGameOver();
@@ -89,8 +100,7 @@ private:
     int rows;
     int maxColors;
     int delayMs;
-    int selectedX;
-    int selectedY;
+    Point selected;
     TileGrid tiles;
     wxTimer timer;
     Randomizer randomizer;
