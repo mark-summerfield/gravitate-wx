@@ -8,7 +8,7 @@
 #endif
 
 
-const wxString VERSION("6.0.0");
+const wxString VERSION("6.0.1");
 
 const wxString COLUMNS("Board/Columns");
 const wxString ROWS("Board/Rows");

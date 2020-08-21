@@ -1,7 +1,6 @@
 // Copyright © 2020 Mark Summerfield. All rights reserved.
 // License: GPLv3
 
-#include "buttonwidget.hpp"
 #include "constants.hpp"
 #include "helpwindow.hpp"
 
@@ -57,7 +56,7 @@ HelpWindow::HelpWindow(wxWindow* parent)
         wxSYS_COLOUR_BTNFACE);
     htmlLabel->SetPage(wxString::Format(HTML_TEXT,
                        background.GetAsString(wxC2S_HTML_SYNTAX)));
-    auto okButton = Button::createStandard(this, wxID_OK);
+    auto okButton = new wxButton(this, wxID_OK, "&OK");
     okButton->SetDefault();
     auto sizer = new wxBoxSizer(wxVERTICAL);
     sizer->Add(htmlLabel, 1, wxALL | wxEXPAND, 3);

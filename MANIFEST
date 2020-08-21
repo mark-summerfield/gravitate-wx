@@ -15,8 +15,6 @@ boardutil.hpp
 boardutil.cpp
 artprovider.hpp
 artprovider.cpp
-buttonwidget.hpp
-buttonwidget.cpp
 constants.hpp  # VERSION
 util.hpp
 util.cpp
