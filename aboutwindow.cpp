@@ -59,7 +59,8 @@ AboutWindow::AboutWindow(wxWindow* parent)
     auto htmlLabel = new wxHtmlWindow(this);
     const int year = wxDateTime::GetCurrentYear();
     auto platform = wxPlatformInfo::Get();
-    auto background = wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE);
+    const auto background = wxSystemSettings::GetColour(
+        wxSYS_COLOUR_BTNFACE);
     htmlLabel->SetPage(wxString::Format(
         HTML_TEXT, background.GetAsString(wxC2S_HTML_SYNTAX), VERSION,
         __VERSION__, wxVERSION_STRING,

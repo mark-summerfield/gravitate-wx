@@ -94,7 +94,7 @@ void BoardWidget::draw(int delayMs, bool force) {
 
 
 TileSize BoardWidget::tileSize() const {
-    auto rect = GetRect();
+    const auto rect = GetRect();
     return {rect.width / static_cast<double>(columns),
             rect.height / static_cast<double>(rows)};
 }
@@ -105,7 +105,7 @@ void BoardWidget::onChar(wxKeyEvent& event) {
         event.Skip();
         return;
     }
-    auto key = event.GetKeyCode();
+    const auto key = event.GetKeyCode();
     if (key == WXK_LEFT || key == WXK_RIGHT || key == WXK_UP ||
             key == WXK_DOWN)
         onMoveKey(key);
@@ -161,8 +161,8 @@ void BoardWidget::onClick(wxMouseEvent& event) {
 
 
 wxSize BoardWidget::DoGetBestClientSize() const {
-    auto rect = GetRect();
-    int size = std::min(rect.width, rect.height);
+    const auto rect = GetRect();
+    const int size = std::min(rect.width, rect.height);
     return wxSize(size, size);
 }
 
@@ -269,7 +269,7 @@ void BoardWidget::drawFocus(wxGraphicsContext* gc, double x1, double y1,
 
 
 void BoardWidget::deleteTile(const Point point) {
-    auto color = tiles[point.x][point.y];
+    const auto color = tiles[point.x][point.y];
     if (color == wxNullColour || !isLegal(point, color))
         return;
     dimAdjoining(point, color);

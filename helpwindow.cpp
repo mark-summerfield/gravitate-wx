@@ -53,7 +53,8 @@ HelpWindow::HelpWindow(wxWindow* parent)
     SetIcon(wxArtProvider::GetIcon(ICON_ID));
     SetMinSize(wxSize(200, 200));
     auto htmlLabel = new wxHtmlWindow(this);
-    auto background = wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE);
+    const auto background = wxSystemSettings::GetColour(
+        wxSYS_COLOUR_BTNFACE);
     htmlLabel->SetPage(wxString::Format(HTML_TEXT,
                        background.GetAsString(wxC2S_HTML_SYNTAX)));
     auto okButton = Button::createStandard(this, wxID_OK);
