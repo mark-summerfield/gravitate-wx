@@ -1,8 +1,8 @@
 // Copyright © 2020 Mark Summerfield. All rights reserved.
 // License: GPLv3
 
-#include "mainwindow.hpp"
 #include "artprovider.hpp"
+#include "mainwindow.hpp"
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP

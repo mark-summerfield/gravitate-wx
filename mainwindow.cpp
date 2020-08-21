@@ -4,6 +4,7 @@
 #include "actions.hpp"
 #include "constants.hpp"
 #include "mainwindow.hpp"
+#include "util.hpp"
 
 #include <wx/artprov.h>
 #include <wx/config.h>
@@ -22,7 +23,7 @@ MainWindow::MainWindow()
     makeLayout();
     makeBindings();
     setPositionAndSize();
-    startupTimer.Bind( // Call after MainWindow is fully constructed
+    startupTimer.Bind( // Only call after MainWindow is fully constructed
         wxEVT_TIMER, [&](wxTimerEvent&) {
             wxCommandEvent event; MainWindow::onNew(event); });
     startupTimer.StartOnce(50);
@@ -134,8 +135,7 @@ void MainWindow::showScores(int score) {
     std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
     int highScore;
     config->Read(HIGH_SCORE, &highScore, HIGH_SCORE_DEFAULT);
-    // TODO use 1,000s separator if poss.
-    SetStatusText(wxString::Format("%d/%d", score, highScore), 1);
+    SetStatusText(humanize(score) + '/' + humanize(highScore), 1);
 }
 
 
