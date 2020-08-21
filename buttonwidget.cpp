@@ -27,11 +27,19 @@ Button* Button::createStandard(wxWindow* parent, wxWindowID id) {
     wxString label;
     wxKeyCode accelerator;
     if (id == wxID_OK) {
+#if wxVERSION_NUMBER >= 3100
         label = L"<span color='#00BB00'>✔</span> <u>O</u>K";
+#else
+        label = L"<u>O</u>K";
+#endif
         accelerator = static_cast<wxKeyCode>('O');
     }
     else if (id == wxID_CANCEL) {
+#if wxVERSION_NUMBER >= 3100
         label = L"<span color='red'>✘</span> <u>C</u>ancel";
+#else
+        label = L"<u>C</u>ancel";
+#endif
         accelerator = static_cast<wxKeyCode>('C');
     }
     else {

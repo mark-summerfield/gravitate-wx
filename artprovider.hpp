@@ -14,7 +14,13 @@
 class ArtProvider : public wxArtProvider
 {
 protected:
+#if wxVERSION_NUMBER >= 3100
   virtual wxBitmap CreateBitmap(const wxArtID& id,
                                 const wxArtClient& client,
                                 const wxSize& size) wxOVERRIDE;
+#else
+  virtual wxBitmap CreateBitmap(const wxArtID& id,
+                                const wxArtClient& client,
+                                const wxSize& size);
+#endif
 };

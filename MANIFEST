@@ -23,6 +23,8 @@ util.cpp
 
 SConstruct
 
+README.md
+
 st.sh
 
 # vim: syn=yaml

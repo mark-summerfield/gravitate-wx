@@ -11,13 +11,21 @@ WIN = sys.platform.startswith('win')
 appname = 'Gravitate'
 sources = [Glob('*.cpp')]
 
+
+AddOption('--31', dest='wx31', action='store_true')
+
+
 if WIN:
     prefix = ' --prefix=C:/bin/wx31'
     wxconfig = 'C:/bin/wx-config.exe'
     rcedit = 'C:/bin/rcedit.exe'
 else:
     prefix = ''
-    wxconfig = '/home/mark/opt/wxwidgets-3.1/buildgtk/wx-config'
+    if GetOption('wx31'):
+        wxconfig = '/home/mark/opt/wxwidgets-3.1/buildgtk/wx-config'
+    else:
+        wxconfig = '/usr/bin/wx-config'
+
 
 ccflags = ['-Wall', '-O3', '-Wextra']
 

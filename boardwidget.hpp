@@ -59,7 +59,11 @@ private:
     void onClick(wxMouseEvent&);
     void onMoveKey(int code);
 
+#if wxVERSION_NUMBER >= 3100
     wxSize DoGetBestClientSize() const wxOVERRIDE;
+#else
+    wxSize DoGetBestClientSize() const;
+#endif
 
     int score;
     bool gameOver;
