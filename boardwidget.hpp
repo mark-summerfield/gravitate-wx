@@ -21,6 +21,7 @@ const int INVALID_POS = -1;
 
 struct ColorPair;
 struct TileSize;
+struct CheckPair;
 
 struct Point {
     Point(int x_=INVALID_POS, int y_=INVALID_POS) : x(x_), y(y_) {}
@@ -84,6 +85,7 @@ private:
                           bool* move);
     bool isSquare(const Point& point);
     void checkGameOver();
+    CheckPair checkTiles();
     Ripple rippledRange(int limit);
 
     void onPaint(wxPaintEvent&);

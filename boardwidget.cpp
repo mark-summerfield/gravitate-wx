@@ -33,6 +33,12 @@ struct TileSize {
 };
 
 
+struct CheckPair {
+    bool userWon;
+    bool canMove;
+};
+
+
 using ColorMap = std::unordered_map<wxUint32, wxUint32>;
 
 
@@ -276,7 +282,7 @@ void BoardWidget::drawTile(wxGraphicsContext* gc, int x, int y,
         gc->SetBrush(brush);
         gc->DrawRectangle(x1 + edge, y1 + edge, width - edge2,
                           height - edge2);
-        if (selected.x == x && selected.x == y)
+        if (selected.x == x && selected.y == y)
             drawFocus(gc, x1, y1, edge, width, height);
     }
 }
@@ -505,7 +511,39 @@ bool BoardWidget::isSquare(const Point& point) {
 
 
 void BoardWidget::checkGameOver() {
-std::cerr << "checkGameOver\n";
+    auto checkPair = checkTiles();
+    if (checkPair.userWon)
+        announceGameOver(WON);
+    else if (!checkPair.canMove)
+        announceGameOver(LOST);
+}
+
+
+CheckPair BoardWidget::checkTiles() {
+    std::unordered_map<wxUint32, int> countForColor;
+    CheckPair checkPair;
+    checkPair.userWon = true;
+    checkPair.canMove = false;
+    for (int x = 0; x < columns; ++x)
+        for (int y = 0; y < rows; ++y) {
+            const auto color = tiles[x][y];
+            if (color != wxNullColour) {
+                ++countForColor[color.GetRGBA()];
+                checkPair.userWon = false;
+                if (isLegal(Point(x, y), color))
+                    checkPair.canMove = true;
+            }
+        }
+    for (auto it = countForColor.cbegin(); it != countForColor.cend(); ++it)
+        if (it->second == 1) {
+            checkPair.canMove = false;
+            break;
+        }
+    if (checkPair.userWon || !checkPair.canMove) {
+        gameOver = true;
+        draw();
+    }
+    return checkPair;
 }
 
 

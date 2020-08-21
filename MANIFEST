@@ -9,7 +9,7 @@ helpwindow.hpp
 helpwindow.cpp
 optionswindow.hpp
 optionswindow.cpp
-boardwidget.hpp # TODO 
+boardwidget.hpp
 boardwidget.cpp # TODO ...
 artprovider.hpp
 artprovider.cpp
