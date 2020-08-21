@@ -27,3 +27,12 @@ const ColorMap& colorMap() {
         };
     return colors;
 }
+
+
+Ripple rippledRange(int limit, Randomizer& randomizer) {
+    Ripple ripple;
+    for (int i = 0; i < limit; ++i)
+        ripple.push_back(i);
+    std::shuffle(ripple.begin(), ripple.end(), randomizer);
+    return ripple;
+}

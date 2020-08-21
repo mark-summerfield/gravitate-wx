@@ -53,7 +53,6 @@ private:
     bool isSquare(const Point& point);
     void checkGameOver();
     CheckPair checkTiles();
-    Ripple rippledRange(int limit);
 
     void onPaint(wxPaintEvent&);
     void onChar(wxKeyEvent&);

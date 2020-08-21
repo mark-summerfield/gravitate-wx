@@ -73,3 +73,4 @@ using TileGrid = std::vector<TileRow>;
 
 size_t colorCount();
 const ColorMap& colorMap();
+Ripple rippledRange(int limit, Randomizer& randomizer);

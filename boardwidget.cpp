@@ -360,8 +360,8 @@ void BoardWidget::moveTiles() {
     bool moved = true;
     while (moved) {
         moved = false;
-        for (int x: rippledRange(columns))
-            for (int y: rippledRange(rows)) {
+        for (int x: rippledRange(columns, randomizer))
+            for (int y: rippledRange(rows, randomizer)) {
                 if (tiles[x][y] != wxNullColour)
                     if (moveIsPossible(Point(x, y), moves)) {
                         moved = true;
@@ -487,13 +487,4 @@ CheckPair BoardWidget::checkTiles() {
         draw();
     }
     return checkPair;
-}
-
-
-Ripple BoardWidget::rippledRange(int limit) {
-    Ripple ripple;
-    for (int i = 0; i < limit; ++i)
-        ripple.push_back(i);
-    std::shuffle(ripple.begin(), ripple.end(), randomizer);
-    return ripple;
 }

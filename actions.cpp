@@ -2,10 +2,10 @@
 // License: GPLv3
 
 #include "aboutwindow.hpp"
+#include "actions.hpp"
 #include "constants.hpp"
 #include "helpwindow.hpp"
 #include "optionswindow.hpp"
-#include "actions.hpp"
 
 
 void onAbout(MainWindow* parent) {
