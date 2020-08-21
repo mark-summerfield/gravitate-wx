@@ -4,7 +4,7 @@ A SameGame/TileFall-like game written in C++/wxWidgets
 
 ![Screenshot](screenshot.png)
 
-A precompiled binary for 64-bit Windows is in Gravitate.zip.
+**A precompiled binary for 64-bit Windows is in Gravitate.zip.**
 
 ## Build
 
