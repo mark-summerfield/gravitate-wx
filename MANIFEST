@@ -10,7 +10,7 @@ helpwindow.cpp
 optionswindow.hpp
 optionswindow.cpp
 boardwidget.hpp
-boardwidget.cpp # TODO ...
+boardwidget.cpp
 artprovider.hpp
 artprovider.cpp
 buttonwidget.hpp
