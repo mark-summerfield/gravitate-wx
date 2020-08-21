@@ -89,7 +89,7 @@ void MainWindow::makeStatusBar() {
     const int widths[STATUS_FIELDS] = {-3, -1};
     statusBar->SetStatusWidths(STATUS_FIELDS, widths);
     showScores(0);
-    setTemporaryStatusMessage("Click a tile to start playing...");
+    setTemporaryStatusMessage("Click a tile to play...");
 }
 
 
@@ -198,5 +198,5 @@ void MainWindow::onGameOver(wxCommandEvent& event) {
     else
         outcome = "Game Over.";
     showScores(score);
-    SetStatusText(outcome + " Click New to play again...");
+    SetStatusText(outcome + " Click New...");
 }

@@ -26,10 +26,10 @@ struct CheckPair;
 struct Point {
     Point(int x_=INVALID_POS, int y_=INVALID_POS) : x(x_), y(y_) {}
 
+    bool isValid() const { return x != INVALID_POS && y != INVALID_POS; }
+
     int x;
     int y;
-
-    bool isValid() const { return x != INVALID_POS && y != INVALID_POS; }
 };
 
 
