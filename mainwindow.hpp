@@ -33,6 +33,10 @@ private:
     void onNew(wxCommandEvent&);
     void onGameOver(wxCommandEvent&);
 
+#if wxVERSION_NUMBER < 3100
+    wxSize FromDIP(const wxSize& size) { return size; }
+#endif
+
     wxTimer startupTimer;
     wxTimer statusTimer;
     wxPanel* panel;

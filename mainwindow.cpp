@@ -48,11 +48,7 @@ void MainWindow::makeWidgets() {
 
 
 void MainWindow::makeToolBar() {
-#if wxVERSION_NUMBER >= 3100
     wxSize size(FromDIP(wxSize(32, 32)));
-#else
-    wxSize size(wxSize(32, 32));
-#endif
     auto toolbar = CreateToolBar();
     toolbar->AddTool(
         wxID_NEW, "New",

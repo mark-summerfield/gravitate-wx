@@ -11,4 +11,9 @@
 class AboutWindow : public wxDialog {
 public:
     explicit AboutWindow(wxWindow* parent);
+
+private:
+#if wxVERSION_NUMBER < 3100
+    wxSize FromDIP(const wxSize& size) { return size; }
+#endif
 };

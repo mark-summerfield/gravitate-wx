@@ -12,7 +12,7 @@ appname = 'Gravitate'
 sources = [Glob('*.cpp')]
 
 
-AddOption('--31', dest='wx31', action='store_true')
+AddOption('--dev', dest='dev', action='store_true')
 
 
 if WIN:
@@ -21,7 +21,7 @@ if WIN:
     rcedit = 'C:/bin/rcedit.exe'
 else:
     prefix = ''
-    if GetOption('wx31'):
+    if GetOption('dev'):
         wxconfig = '/home/mark/opt/wxwidgets-3.1/buildgtk/wx-config'
     else:
         wxconfig = '/usr/bin/wx-config'

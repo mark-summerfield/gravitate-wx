@@ -52,11 +52,7 @@ AboutWindow::AboutWindow(wxWindow* parent)
                    wxDefaultPosition, wxSize(450, 550), FRAME_STYLE) {
     SetIcon(wxArtProvider::GetIcon(ICON_ID));
     SetMinSize(wxSize(200, 200));
-#if wxVERSION_NUMBER >= 3100
     wxSize size(FromDIP(wxSize(48, 48)));
-#else
-    wxSize size(wxSize(48, 48));
-#endif
     auto iconBitmap = new wxStaticBitmap(
         this, wxID_ANY, wxArtProvider::GetBitmap(ICON_ID, wxART_OTHER,
         size));
