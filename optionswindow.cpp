@@ -1,7 +1,7 @@
 // Copyright © 2020 Mark Summerfield. All rights reserved.
 // License: GPLv3
 
-#include "boardwidget.hpp"
+#include "boardutil.hpp"
 #include "buttonwidget.hpp"
 #include "constants.hpp"
 #include "optionswindow.hpp"
@@ -47,7 +47,7 @@ void OptionsWindow::makeWidgets() {
     config->Read(MAX_COLORS, &n, MAX_COLORS_DEFAULT);
     maxColorsSpinCtrl = new wxSpinCtrl(
         panel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
-        style, 2, BoardWidget::colorCount(), n);
+        style, 2, colorCount(), n);
     maxColorsSpinCtrl->SetToolTip(wxString::Format(
         "How many colors to use [default %d]", MAX_COLORS_DEFAULT));
     delayMsLabel = new wxStaticText(panel, wxID_ANY, "&Delay (ms)");

@@ -3,44 +3,13 @@
 // License: GPLv3
 
 #include "constants.hpp"
+#include "boardutil.hpp"
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif
 #include <wx/graphics.h>
-
-#include <random>
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
-
-
-const int INVALID_POS = -1;
-
-
-struct ColorPair;
-struct TileSize;
-struct CheckPair;
-
-struct Point {
-    Point(int x_=INVALID_POS, int y_=INVALID_POS) : x(x_), y(y_) {}
-
-    bool isValid() const { return x != INVALID_POS && y != INVALID_POS; }
-
-    int x;
-    int y;
-};
-
-
-using ColorVector = std::vector<wxColour>;
-using Coords = double[COORDS_LEN][2];
-using PointMap = std::unordered_map<Point, Point>;
-using PointSet = std::unordered_set<Point>;
-using Randomizer = std::default_random_engine;
-using Ripple = std::vector<int>;
-using TileRow = std::vector<wxColour>;
-using TileGrid = std::vector<TileRow>;
 
 
 wxDECLARE_EVENT(SCORE_EVENT, wxCommandEvent);
@@ -49,8 +18,6 @@ wxDECLARE_EVENT(GAME_OVER_EVENT, wxCommandEvent);
 
 class BoardWidget : public wxWindow {
 public:
-    static size_t colorCount();
-
     explicit BoardWidget(wxWindow* parent);
 
     void newGame();

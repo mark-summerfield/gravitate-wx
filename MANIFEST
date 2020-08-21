@@ -11,6 +11,8 @@ optionswindow.hpp
 optionswindow.cpp
 boardwidget.hpp
 boardwidget.cpp
+boardutil.hpp
+boardutil.cpp
 artprovider.hpp
 artprovider.cpp
 buttonwidget.hpp

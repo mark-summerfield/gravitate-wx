@@ -18,63 +18,6 @@ wxDEFINE_EVENT(SCORE_EVENT, wxCommandEvent);
 wxDEFINE_EVENT(GAME_OVER_EVENT, wxCommandEvent);
 
 
-const auto BACKGROUND_COLOR = wxColour(0xFFFFFEE0);
-
-
-struct ColorPair {
-    wxColour light;
-    wxColour dark;
-};
-
-
-struct TileSize {
-    double width;
-    double height;
-};
-
-
-struct CheckPair {
-    bool userWon;
-    bool canMove;
-};
-
-
-using ColorMap = std::unordered_map<wxUint32, wxUint32>;
-
-
-bool operator==(const Point& a, const Point& b) {
-    return a.x == b.x && a.y == b.y;
-}
-
-namespace std {
-    template<> struct hash<Point> {
-        size_t operator()(const Point& xy) const noexcept {
-            return std::hash<int>{}(xy.x) ^ (std::hash<int>{}(xy.y) << 1);
-        }
-    };
-}
-
-
-static const ColorMap& colorMap() {
-    static ColorMap colors;
-    if (colors.empty())
-        colors = { // key=dark, value=light
-        {0xFF800000, 0xFFF99999},
-        {0xFF800000, 0xFFF99999},
-        {0xFF008000, 0xFF99F999},
-        {0xFF808000, 0xFFF9F999},
-        {0xFF000080, 0xFF9999F9},
-        {0xFF800080, 0xFFF999F9},
-        {0xFF008080, 0xFF99F9F9},
-        {0xFF808080, 0xFFF9F9F9},
-        };
-    return colors;
-}
-
-
-size_t BoardWidget::colorCount() { return colorMap().size(); }
-
-
 BoardWidget::BoardWidget(wxWindow* parent)
         : wxWindow(parent, wxID_ANY), score(0), gameOver(true),
           drawing(false), columns(COLUMNS_DEFAULT), rows(ROWS_DEFAULT),
