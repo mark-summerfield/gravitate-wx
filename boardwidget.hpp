@@ -38,6 +38,7 @@ private:
                      const Coords& coords);
     void drawFocus(wxGraphicsContext* gc, double x1, double y1, double edge,
                    double width, double height);
+    void drawGameOver(wxGraphicsContext *gc);
     void deleteTile(const Point point);
     bool isLegal(const Point point, const wxColour& color);
     void dimAdjoining(const Point point, const wxColour& color);
@@ -52,7 +53,7 @@ private:
                           bool* move);
     bool isSquare(const Point& point);
     void checkGameOver();
-    CheckPair checkTiles();
+    bool checkTiles();
 
     void onPaint(wxPaintEvent&);
     void onChar(wxKeyEvent&);
@@ -67,6 +68,7 @@ private:
 
     int score;
     bool gameOver;
+    bool userWon;
     bool drawing;
     int columns;
     int rows;

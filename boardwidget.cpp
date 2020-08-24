@@ -20,8 +20,9 @@ wxDEFINE_EVENT(GAME_OVER_EVENT, wxCommandEvent);
 
 BoardWidget::BoardWidget(wxWindow* parent)
         : wxWindow(parent, wxID_ANY), score(0), gameOver(true),
-          drawing(false), columns(COLUMNS_DEFAULT), rows(ROWS_DEFAULT),
-          maxColors(MAX_COLORS_DEFAULT), delayMs(DELAY_MS_DEFAULT) {
+          userWon(false), drawing(false), columns(COLUMNS_DEFAULT),
+          rows(ROWS_DEFAULT), maxColors(MAX_COLORS_DEFAULT),
+          delayMs(DELAY_MS_DEFAULT) {
     SetDoubleBuffered(true);
     const auto seed = std::chrono::system_clock::now().time_since_epoch()
         .count();
@@ -35,6 +36,7 @@ BoardWidget::BoardWidget(wxWindow* parent)
 
 void BoardWidget::newGame() {
     gameOver = false;
+    userWon = false;
     score = 0;
     selected.x = selected.y = INVALID_POS;
     std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
@@ -180,9 +182,33 @@ void BoardWidget::onPaint(wxPaintEvent&) {
         for (int x = 0; x < columns; ++x)
             for (int y = 0; y < rows; ++y)
                 drawTile(gc, x, y, size.width, size.height, edge, edge2);
+        if (userWon || gameOver)
+            drawGameOver(gc);
         delete gc;
     }
     drawing = false;
+}
+
+
+void BoardWidget::drawGameOver(wxGraphicsContext *gc) {
+    const wxString text(userWon ? "You Won!" : "Game Over");
+    wxFont font(36, wxFONTFAMILY_DECORATIVE, wxFONTSTYLE_NORMAL,
+                wxFONTWEIGHT_BOLD);
+    gc->SetFont(font, *wxWHITE);
+    double width;
+    double height;
+    double descent;
+    double leading;
+    gc->GetTextExtent(text, &width, &height, &descent, &leading);
+    const auto rect = GetRect();
+    const auto x = (rect.GetWidth() - width) / 2;
+    const auto y = (rect.GetHeight() / 2) - (height + descent + leading);
+    gc->DrawText(text, x - 2, y - 3);
+    gc->SetFont(font, *wxBLACK);
+    gc->DrawText(text, x, y);
+    wxColour color(userWon ? 0xFF0000BB : 0xFF009900);
+    gc->SetFont(font, color);
+    gc->DrawText(text, x - 1, y - 2);
 }
 
 
@@ -454,37 +480,36 @@ bool BoardWidget::isSquare(const Point& point) {
 
 
 void BoardWidget::checkGameOver() {
-    auto checkPair = checkTiles();
-    if (checkPair.userWon)
+    auto canMove = checkTiles();
+    if (userWon)
         announceGameOver(WON);
-    else if (!checkPair.canMove)
+    else if (!canMove)
         announceGameOver(LOST);
 }
 
 
-CheckPair BoardWidget::checkTiles() {
+bool BoardWidget::checkTiles() {
     std::unordered_map<wxUint32, int> countForColor;
-    CheckPair checkPair;
-    checkPair.userWon = true;
-    checkPair.canMove = false;
+    userWon = true;
+    bool canMove = false;
     for (int x = 0; x < columns; ++x)
         for (int y = 0; y < rows; ++y) {
             const auto color = tiles[x][y];
             if (color != wxNullColour) {
                 ++countForColor[color.GetRGBA()];
-                checkPair.userWon = false;
+                userWon = false;
                 if (isLegal(Point(x, y), color))
-                    checkPair.canMove = true;
+                    canMove = true;
             }
         }
     for (auto it = countForColor.cbegin(); it != countForColor.cend(); ++it)
         if (it->second == 1) {
-            checkPair.canMove = false;
+            canMove = false;
             break;
         }
-    if (checkPair.userWon || !checkPair.canMove) {
+    if (userWon || !canMove) {
         gameOver = true;
         draw();
     }
-    return checkPair;
+    return canMove;
 }

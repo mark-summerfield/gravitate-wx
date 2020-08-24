@@ -32,6 +32,7 @@ MainWindow::MainWindow()
 
 void MainWindow::setTemporaryStatusMessage(const wxString& message,
                                            int timeoutMs) {
+    statusTimer.Stop();
     SetStatusText(message);
     statusTimer.Bind(wxEVT_TIMER,
                      [&](wxTimerEvent&) { SetStatusText(""); });
@@ -135,7 +136,7 @@ void MainWindow::showScores(int score) {
     std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
     int highScore;
     config->Read(HIGH_SCORE, &highScore, HIGH_SCORE_DEFAULT);
-    SetStatusText(humanize(score) + '/' + humanize(highScore), 1);
+    SetStatusText(humanize(score) + L" • " + humanize(highScore), 1);
 }
 
 
@@ -186,17 +187,13 @@ void MainWindow::onGameOver(wxCommandEvent& event) {
     std::unique_ptr<wxConfig> config(new wxConfig(wxTheApp->GetAppName()));
     int highScore;
     config->Read(HIGH_SCORE, &highScore, HIGH_SCORE_DEFAULT);
-    wxString outcome;
+    wxString text("Click New...");
     if (event.GetString() == WON) {
-        outcome = "You won";
         if (score > highScore) {
-            outcome += " with a new highscore";
+            text = "New Highscore! " + text;
             config->Write(HIGH_SCORE, score);
         }
-        outcome += '!';
     }
-    else
-        outcome = "Game Over.";
     showScores(score);
-    SetStatusText(outcome + " Click New...");
+    setTemporaryStatusMessage(text);
 }
