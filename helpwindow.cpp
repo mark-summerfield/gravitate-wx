@@ -30,8 +30,8 @@ tiles falling to the bottom and moving off to the left, they
 </p>
 <hr>
 <table>
-<tr><td><font color=darkgreen>Key</font></td>
-    <td><font color=darkgreen>Action</font></td></tr>
+<tr><td><font color="#004E00">Key</font></td>
+    <td><font color="#004E00">Action</font></td></tr>
 <tr><td><b>a</b></td><td>Show About box</td></tr>
 <tr><td><b>h</b> or <b>F1</b></td><td>Show Help (this window)</td></tr>
 <tr><td><b>n</b></td><td>New game</td></tr>
