@@ -10,9 +10,9 @@
 
 const wxString HTML_TEXT(LR"RAW(<html>
 <body style="background-color: %s;">
-<h2><center><font color=navy>Gravitate</font></center></h2>
-<p><font color=navy><center>
-<b>The purpose of the game is to remove all the tiles.</b></center></font>
+<center><font size=+2 color=navy><b>Gravitate</b></font></center>
+<p><font size=+1 color=navy><center>
+The purpose of the game is to remove all the tiles.</center></font>
 </p>
 <p>
 Click a tile that has at least one vertically or
@@ -30,7 +30,8 @@ tiles falling to the bottom and moving off to the left, they
 </p>
 <hr>
 <table>
-<tr><td><u>Key</u></td><td><u>Action</u></td></tr>
+<tr><td><font color=darkgreen>Key</font></td>
+    <td><font color=darkgreen>Action</font></td></tr>
 <tr><td><b>a</b></td><td>Show About box</td></tr>
 <tr><td><b>h</b> or <b>F1</b></td><td>Show Help (this window)</td></tr>
 <tr><td><b>n</b></td><td>New game</td></tr>

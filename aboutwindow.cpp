@@ -12,10 +12,10 @@
 
 const wxString HTML_TEXT(LR"RAW(<html>
 <body style="background-color: %s;">
-<h2><center><font color=navy>Gravitate %s</font></center></h2>
+<center><font size=+2 color=navy><b>Gravitate</b> %s</font></center>
 <p>
-<center><font color=navy><b>A game similar to
-TileFall/SameGame.</b></font></center>
+<center><font size=+1 color=navy>A game similar to
+TileFall/SameGame.</font></center>
 </p>
 <p>
 <center>
@@ -26,7 +26,7 @@ TileFall/SameGame.</b></font></center>
 <p>
 <center>
 GCC/C++ %s&nbsp;&nbsp;•&nbsp;&nbsp;%s<br>%s
-</center>
+<font></center>
 </p>
 <hr>
 <p>
