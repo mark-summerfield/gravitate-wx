@@ -11,6 +11,36 @@ bool operator==(const Point& a, const Point& b) {
 }
 
 
+ColorVector getColors(int maxColors, Randomizer &randomizer) {
+    auto colors = colorMap();
+    ColorVector result;
+    for (auto it = colors.cbegin(); it != colors.cend(); ++it)
+        result.push_back(wxColour(it->first));
+    std::shuffle(result.begin(), result.end(), randomizer);
+    result.resize(maxColors);
+    return result;
+}
+
+
+ColorPair getColorPair(const wxColour& color, bool gameOver) {
+    ColorPair colorPair;
+    auto colors = colorMap();
+    if (colors.find(color.GetRGBA()) == colors.end()) { // not found
+        colorPair.light = color;                        // ∴ dimmed
+        colorPair.dark = color.ChangeLightness(70);
+    }
+    else {
+        colorPair.light = wxColour(colors[color.GetRGBA()]);
+        colorPair.dark = color;
+        if (gameOver) {
+            colorPair.light = colorPair.light.ChangeLightness(85);
+            colorPair.dark = colorPair.dark.ChangeLightness(85);
+        }
+    }
+    return colorPair;
+}
+
+
 size_t colorCount() { return colorMap().size(); }
 
 

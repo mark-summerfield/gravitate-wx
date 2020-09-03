@@ -25,10 +25,8 @@ public:
 private:
     void announceScore();
     void announceGameOver(const wxString&);
-    ColorVector getColors(Randomizer&);
     void draw(int delayMs=0, bool force=false);
     TileSize tileSize() const;
-    ColorPair getColorPair(const wxColour& color) const;
     void drawTile(wxGraphicsContext* gc, int x, int y, double width,
                   double height, double edge, double edge2);
     void drawSegments(wxGraphicsContext* gc, double edge,

@@ -20,12 +20,6 @@ const int INVALID_POS = -1;
 const auto BACKGROUND_COLOR = wxColour(0xFFFFFEE0);
 
 
-struct CheckPair {
-    bool userWon;
-    bool canMove;
-};
-
-
 struct ColorPair {
     wxColour light;
     wxColour dark;
@@ -71,6 +65,8 @@ using TileRow = std::vector<wxColour>;
 using TileGrid = std::vector<TileRow>;
 
 
+ColorVector getColors(int, Randomizer&);
+ColorPair getColorPair(const wxColour&, bool);
 size_t colorCount();
 const ColorMap& colorMap();
 Ripple rippledRange(int limit, Randomizer& randomizer);

@@ -7,9 +7,7 @@
 #include <wx/dcclient.h>
 #include <wx/utils.h>
 
-#include <algorithm>
 #include <chrono>
-#include <cmath>
 #include <functional>
 #include <memory>
 
@@ -44,7 +42,7 @@ void BoardWidget::newGame() {
     config->Read(COLUMNS, &columns, COLUMNS_DEFAULT);
     config->Read(ROWS, &rows, ROWS_DEFAULT);
     config->Read(DELAY_MS, &delayMs, DELAY_MS_DEFAULT);
-    const auto colors = getColors(randomizer);
+    const auto colors = getColors(maxColors, randomizer);
     std::uniform_int_distribution<int> distribution(0, maxColors - 1);
     tiles.clear();
     for (int x = 0; x < columns; ++x) {
@@ -54,17 +52,6 @@ void BoardWidget::newGame() {
     }
     announceScore();
     draw();
-}
-
-
-ColorVector BoardWidget::getColors(Randomizer &randomizer) {
-    auto colors = colorMap();
-    ColorVector result;
-    for (auto it = colors.cbegin(); it != colors.cend(); ++it)
-        result.push_back(wxColour(it->first));
-    std::shuffle(result.begin(), result.end(), randomizer);
-    result.resize(maxColors);
-    return result;
 }
 
 
@@ -212,25 +199,6 @@ void BoardWidget::drawGameOver(wxGraphicsContext *gc) {
 }
 
 
-ColorPair BoardWidget::getColorPair(const wxColour& color) const {
-    ColorPair colorPair;
-    auto colors = colorMap();
-    if (colors.find(color.GetRGBA()) == colors.end()) { // not found
-        colorPair.light = color;                        // ∴ dimmed
-        colorPair.dark = color.ChangeLightness(70);
-    }
-    else {
-        colorPair.light = wxColour(colors[color.GetRGBA()]);
-        colorPair.dark = color;
-        if (gameOver) {
-            colorPair.light = colorPair.light.ChangeLightness(85);
-            colorPair.dark = colorPair.dark.ChangeLightness(85);
-        }
-    }
-    return colorPair;
-}
-
-
 void BoardWidget::drawTile(wxGraphicsContext* gc, int x, int y,
                            double width, double height, double edge,
                            double edge2) {
@@ -244,7 +212,7 @@ void BoardWidget::drawTile(wxGraphicsContext* gc, int x, int y,
     else {
         const double x2 = x1 + width;
         const double y2 = y1 + height;
-        const auto colorPair = getColorPair(color);
+        const auto colorPair = getColorPair(color, gameOver);
         drawSegments(gc, edge, colorPair, x1, y1, x2, y2);
         auto brush = gc->CreateLinearGradientBrush(
             x1, y1, x2, y2, colorPair.light, colorPair.dark);
