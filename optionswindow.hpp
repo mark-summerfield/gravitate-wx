@@ -8,6 +8,11 @@
 #endif
 #include <wx/spinctrl.h>
 
+#include "mainwindow.hpp"
+
+
+void onOptions(MainWindow* parent);
+
 
 class OptionsWindow : public wxDialog {
 public:

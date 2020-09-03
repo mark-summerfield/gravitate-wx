@@ -10,6 +10,12 @@
 #include <wx/platinfo.h>
 
 
+void onAbout(MainWindow* parent) {
+    AboutWindow aboutWindow(parent);
+    aboutWindow.ShowModal();
+}
+
+
 const wxString HTML_TEXT(LR"RAW(<html>
 <body style="background-color: %s;">
 <center><font size=+2 color=navy><b>Gravitate</b> %s</font></center>

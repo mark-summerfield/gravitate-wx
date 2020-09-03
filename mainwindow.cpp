@@ -1,8 +1,10 @@
 // Copyright © 2020 Mark Summerfield. All rights reserved.
 // License: GPLv3
 
-#include "actions.hpp"
+#include "aboutwindow.hpp"
 #include "constants.hpp"
+#include "helpwindow.hpp"
+#include "optionswindow.hpp"
 #include "mainwindow.hpp"
 #include "util.hpp"
 

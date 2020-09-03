@@ -1,8 +1,6 @@
 application.cpp
 mainwindow.hpp
 mainwindow.cpp
-actions.hpp
-actions.cpp
 aboutwindow.hpp
 aboutwindow.cpp
 helpwindow.hpp

@@ -13,6 +13,16 @@
 #include <memory>
 
 
+void onOptions(MainWindow *parent) {
+    OptionsWindow optionsWindow(parent);
+    if (optionsWindow.ShowModal() == wxID_OK)
+        parent->setTemporaryStatusMessage(
+            "Updated Options. Click New...", TIMEOUT * 2);
+    else
+        parent->SetStatusText("");
+}
+
+
 OptionsWindow::OptionsWindow(wxWindow* parent)
         : wxDialog(parent, wxID_ANY, wxString::Format(
                    L"Options — %s", wxTheApp->GetAppName())) {

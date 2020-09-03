@@ -8,6 +8,12 @@
 #include <wx/html/htmlwin.h>
 
 
+void onHelp(MainWindow *parent) {
+    HelpWindow helpWindow(parent);
+    helpWindow.ShowModal();
+}
+
+
 const wxString HTML_TEXT(LR"RAW(<html>
 <body style="background-color: %s;">
 <center><font size=+2 color=navy><b>Gravitate</b></font></center>

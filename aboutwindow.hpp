@@ -7,6 +7,11 @@
     #include <wx/wx.h>
 #endif
 
+#include "mainwindow.hpp"
+
+
+void onAbout(MainWindow* parent);
+
 
 class AboutWindow : public wxDialog {
 public:
