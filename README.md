@@ -2,6 +2,8 @@
 
 A SameGame/TileFall-like game written in C++/wxWidgets
 
+Superceded by the superior [Rust/FLTK](https://github.com/mark-summerfield/gravitate-rs) version.
+
 ![Screenshot](screenshot.png)
 
 **A precompiled binary for 64-bit Windows is in Gravitate.zip.**
